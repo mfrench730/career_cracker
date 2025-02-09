@@ -1,5 +1,5 @@
 """
-ASGI config for career_cracker_BE project.
+ASGI config for careercracker project.
 
 It exposes the ASGI callable as a module-level variable named ``application``.
 
@@ -11,6 +11,6 @@ import os
 
 from django.core.asgi import get_asgi_application
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'career_cracker_BE.settings')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'careercracker.settings')
 
 application = get_asgi_application()
