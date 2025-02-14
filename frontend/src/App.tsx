@@ -1,64 +1,87 @@
-import React, { useState } from 'react'
-import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom'
-import Login from './components/Login'
-import Signup from './components/Signup'
-import Home from './components/Home'
+import React from 'react'
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+  useLocation,
+} from 'react-router-dom'
+import { AuthProvider } from './context/AuthContext'
+import SignIn from './pages/auth/SignIn'
+import SignUp from './pages/auth/SignUp'
+import Dashboard from './pages/dashboard/Dashboard'
+import { useAuth } from './context/AuthContext'
 
-const App: React.FC = () => {
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false)
+const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
+  const { isAuthenticated } = useAuth()
+  const location = useLocation()
 
-  const handleLoginSuccess = () => {
-    setIsAuthenticated(true)
+  if (!isAuthenticated) {
+    return <Navigate to="/signin" state={{ from: location }} replace />
   }
 
-  const handleSignupSuccess = () => {
-    setIsAuthenticated(true)
+  return <>{children}</>
+}
+
+const PublicRoute = ({ children }: { children: React.ReactNode }) => {
+  const { isAuthenticated } = useAuth()
+  const location = useLocation()
+
+  if (isAuthenticated) {
+    const from = location.state?.from?.pathname || '/dashboard'
+    return <Navigate to={from} replace />
   }
 
-  const handleLogout = () => {
-    setIsAuthenticated(false)
-  }
+  return <>{children}</>
+}
 
+const AppRoutes = () => {
   return (
-    <Router>
-      <div>
-        <nav style={{ marginBottom: '1rem', textAlign: 'center' }}>
-          {!isAuthenticated && (
-            <>
-              <Link to="/login" style={{ marginRight: '1rem' }}>
-                Login
-              </Link>
-              <Link to="/signup">Sign Up</Link>
-            </>
-          )}
-          {isAuthenticated && (
-            <Link to="/" onClick={handleLogout}>
-              Logout
-            </Link>
-          )}
-        </nav>
-        <Routes>
-          <Route
-            path="/login"
-            element={<Login onLoginSuccess={handleLoginSuccess} />}
-          />
-          <Route
-            path="/signup"
-            element={<Signup onSignupSuccess={handleSignupSuccess} />}
-          />
-          <Route
-            path="/"
-            element={
-              isAuthenticated ? (
-                <Home onLogout={handleLogout} />
-              ) : (
-                <Login onLoginSuccess={handleLoginSuccess} />
-              )
-            }
-          />
-        </Routes>
-      </div>
-    </Router>
+    <Routes>
+      {/* Public Routes */}
+      <Route
+        path="/signin"
+        element={
+          <PublicRoute>
+            <SignIn />
+          </PublicRoute>
+        }
+      />
+      <Route
+        path="/signup"
+        element={
+          <PublicRoute>
+            <SignUp />
+          </PublicRoute>
+        }
+      />
+
+      {/* Protected Routes */}
+      <Route
+        path="/dashboard"
+        element={
+          <ProtectedRoute>
+            <Dashboard />
+          </ProtectedRoute>
+        }
+      />
+
+      {/* Root redirect */}
+      <Route path="/" element={<Navigate to="/dashboard" replace />} />
+
+      {/* Catch all route */}
+      <Route path="*" element={<Navigate to="/dashboard" replace />} />
+    </Routes>
+  )
+}
+
+const App = () => {
+  return (
+    <AuthProvider>
+      <Router>
+        <AppRoutes />
+      </Router>
+    </AuthProvider>
   )
 }
 
