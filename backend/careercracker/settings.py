@@ -41,6 +41,8 @@ INSTALLED_APPS = [
     'rest_framework',
     'accounts',
     'corsheaders',
+    'interviews',
+    'jobs',
 ]
 
 MIDDLEWARE = [
@@ -74,8 +76,15 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'careercracker.wsgi.application'
 
-CORS_ALLOW_ALL_ORIGINS = True
-CORS_ALLOW_CREDENTIALS = True
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ),
+}
+
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:5432",
+]
 
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
