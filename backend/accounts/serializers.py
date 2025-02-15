@@ -11,7 +11,7 @@ class UserSignupSerializer(serializers.ModelSerializer):
     experience_level = serializers.CharField(required=True)
     preferred_interview_type = serializers.ListField(child=serializers.CharField(), required=True)
     preferred_language = serializers.CharField(required=True)
-    resume_url = serializers.URLField(required=True)
+    resume_url = serializers.URLField(required=False)
     
     password = serializers.CharField(write_only=True, min_length=8)
     email = serializers.EmailField(required=True)
