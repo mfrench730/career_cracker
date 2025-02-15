@@ -8,7 +8,7 @@ import { Input } from '../../components/ui/input'
 import { Checkbox } from '../../components/ui/checkbox'
 
 const SignIn: React.FC = () => {
-  const [email, setEmail] = useState('')
+  const [username, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [rememberMe, setRememberMe] = useState(false)
   const [loading, setLoading] = useState(false)
@@ -26,7 +26,7 @@ const SignIn: React.FC = () => {
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email, password }),
+          body: JSON.stringify({ username, password }),
         }
       )
 
@@ -54,15 +54,15 @@ const SignIn: React.FC = () => {
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label
-              htmlFor="email"
+              htmlFor="username"
               className="block text-sm font-medium text-gray-700"
             >
-              Email
+              Username
             </label>
             <Input
-              type="email"
-              id="email"
-              value={email}
+              type="username"
+              id="username"
+              value={username}
               onChange={(e) => setEmail(e.target.value)}
               required
             />
