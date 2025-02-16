@@ -6,14 +6,16 @@ import { Link, useNavigate } from 'react-router-dom'
 import { Button } from '../../components/ui/button'
 import { Input } from '../../components/ui/input'
 import { Checkbox } from '../../components/ui/checkbox'
+import { useAuth } from '../../context/AuthContext'
 
 const SignIn: React.FC = () => {
-  const [username, setEmail] = useState('')
+  const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [rememberMe, setRememberMe] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const navigate = useNavigate()
+  const { login } = useAuth()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -30,15 +32,17 @@ const SignIn: React.FC = () => {
         }
       )
 
-      if (response.ok) {
-        const data = await response.json()
-        // Store the token in localStorage or a secure cookie
-        localStorage.setItem('authToken', data.token)
-        navigate('/dashboard')
-      } else {
+      if (!response.ok) {
         const errorData = await response.json()
-        setError(errorData.message || 'Invalid email or password')
+        setError(errorData.message || 'Invalid username or password')
+        navigate('/signin')
+        return
       }
+
+      const data = await response.json()
+      localStorage.setItem('token', data.token)
+      login()
+      navigate('/dashboard')
     } catch (err) {
       setError('An error occurred. Please try again.')
     } finally {
@@ -60,10 +64,10 @@ const SignIn: React.FC = () => {
               Username
             </label>
             <Input
-              type="username"
+              type="text"
               id="username"
               value={username}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={(e) => setUsername(e.target.value)}
               required
             />
           </div>

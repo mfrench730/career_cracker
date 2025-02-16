@@ -8,20 +8,10 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from .serializers import UserSignupSerializer
 
-
-
-##########################################
-#just added them
-##########################################
-
-
 @api_view(["GET"])
 @permission_classes([IsAuthenticated])
 def protected_view(request):
     return Response({"message": "You have accessed a protected route!"})
-
-
-
 
 class SignInView(APIView):
     def post(self, request):
@@ -48,11 +38,6 @@ class SignInView(APIView):
             status=status.HTTP_200_OK,
         )
 
-
-######################################################################
-#---------------------------------------------------------------------
-######################################################################
-
 class SignUpView(APIView):
      def post(self, request):
         serializer = UserSignupSerializer(data=request.data)
@@ -66,6 +51,14 @@ class LoginView(APIView):
         username = request.data.get("username")
         password = request.data.get("password")
         user = authenticate(username=username, password=password)
-        if user:
-            return Response({'message': 'Login successful.'}, status=status.HTTP_200_OK)
-        return Response({'error': 'Invalid credentials.'}, status=status.HTTP_401_UNAUTHORIZED)
+        if user is not None:
+            refresh = RefreshToken.for_user(user)
+            return Response({
+                'token': str(refresh.access_token),
+                'message': 'Login successful'
+            })
+        else:
+            return Response(
+                {'message': 'Invalid username or password'},
+                status=status.HTTP_401_UNAUTHORIZED
+            )
