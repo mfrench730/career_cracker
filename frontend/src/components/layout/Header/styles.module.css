@@ -10,15 +10,15 @@
   align-items: center;
   justify-content: space-between;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  transition: left 0.5s ease; /* Only transition the left property */
+  transition: left 0.5s ease;
   z-index: 98;
-  width: calc(100% - 78px); /* Set initial width */
+  width: calc(100% - 78px);
 }
 
 .header.open {
   left: 250px;
   width: calc(100% - 250px);
-  transition: all 0.5s ease; /* Transition everything when opening */
+  transition: all 0.5s ease;
 }
 
 .headerLeft h1 {
