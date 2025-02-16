@@ -1,35 +1,43 @@
-import React from 'react'
+// src/App.tsx
 import {
   BrowserRouter as Router,
   Routes,
   Route,
   Navigate,
-  useLocation,
 } from 'react-router-dom'
 import { AuthProvider } from './context/AuthContext'
+import Layout from './components/layout/Layout'
+import Dashboard from './pages/dashboard/Dashboard'
+import Interview from './pages/interview/AiInterview'
+import Jobs from './pages/jobs/Jobs'
 import SignIn from './pages/auth/SignIn'
 import SignUp from './pages/auth/SignUp'
-import Dashboard from './pages/dashboard/Dashboard'
 import { useAuth } from './context/AuthContext'
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
-  const { isAuthenticated } = useAuth()
-  const location = useLocation()
+  const { isAuthenticated, isLoading } = useAuth()
 
-  if (!isAuthenticated) {
-    return <Navigate to="/signin" state={{ from: location }} replace />
+  // Show loading state while checking authentication
+  if (isLoading) {
+    return <div>Loading...</div>
   }
 
-  return <>{children}</>
+  if (!isAuthenticated) {
+    return <Navigate to="/signin" replace />
+  }
+
+  return <Layout>{children}</Layout>
 }
 
 const PublicRoute = ({ children }: { children: React.ReactNode }) => {
-  const { isAuthenticated } = useAuth()
-  const location = useLocation()
+  const { isAuthenticated, isLoading } = useAuth()
+
+  if (isLoading) {
+    return <div>Loading...</div>
+  }
 
   if (isAuthenticated) {
-    const from = location.state?.from?.pathname || '/dashboard'
-    return <Navigate to={from} replace />
+    return <Navigate to="/dashboard" replace />
   }
 
   return <>{children}</>
@@ -65,8 +73,24 @@ const AppRoutes = () => {
           </ProtectedRoute>
         }
       />
+      <Route
+        path="/interview"
+        element={
+          <ProtectedRoute>
+            <Interview />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/jobs"
+        element={
+          <ProtectedRoute>
+            <Jobs />
+          </ProtectedRoute>
+        }
+      />
 
-      {/* Root redirect */}
+      {/* Default Route */}
       <Route path="/" element={<Navigate to="/dashboard" replace />} />
 
       {/* Catch all route */}
