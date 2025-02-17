@@ -1,13 +1,16 @@
 from openai import OpenAI
+import openai
 import os
-from backend.jobs.utils import api_client as jobs
-from backend.jobs.utils.OnetWebService import OnetWebService
-from openai import OpenAI
+from jobs.utils import api_client as jobs
+from jobs.utils.OnetWebService import OnetWebService
+
 
 class OpenAIClient:
     # Singleton OpenAI API client to reuse session across views.
     
     _instance = None  # Store a single instance
+
+    onet_ws = OnetWebService(username=os.environ.get("ONET_USERNAME"), password=os.environ.get("ONET_PASSWORD"))
 
     conversation_history = [
     {"role": "system", "content": "You are a human resources worker with moderate technical experience; ask pointed, open-ended, questions."}
@@ -21,6 +24,36 @@ class OpenAIClient:
 
     def get_client(self):
         return self.client  # Return the OpenAI client instance
+    
+    def generate_question(self, user_career, onet_ws=onet_ws):
+
+        # need user career stored to get field-specific questions
+        # career_description = jobs.get_job_info(user_career, onet_ws)
+        # career_tasks = jobs.get_tasks(user_career, onet_ws)
+
+        try:
+            response = openai.ChatCompletion.create(
+                model="gpt-4o-mini", 
+                messages=self.conversation_history,
+                max_tokens=75  # adjust as needed
+            )
+
+            question = response['choices'][0]['message']['content'].strip()
+            return question
+        
+        except openai.error.OpenAIError as e:
+            return f"Error generating question: {e}"
+
+    def get_feedback(self, user_response):
+        # openai_client = OpenAIClient()
+        response = openai.get_client().completions.create(
+            model="gpt-3.5-turbo",
+            prompt=f"Provide feedback for the following user response: {user_response}",
+            max_tokens=100
+        )
+        return response.choices[0].text.strip()
+
+
 
 
 
