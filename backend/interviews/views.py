@@ -1,11 +1,8 @@
-from django.shortcuts import render
 from rest_framework.response import Response
 from rest_framework import status, generics
 from rest_framework.views import APIView
-from django.http import JsonResponse
 from interviews.utils.api_client import OpenAIClient
 from .models import Interview, InterviewQuestion
-from django.utils import timezone
 from rest_framework.permissions import IsAuthenticated
 from .serializers import InterviewSerializer, InterviewQuestionSerializer
 from rest_framework.pagination import PageNumberPagination
@@ -100,7 +97,7 @@ class SubmitAnswer(APIView):
             return Response({"error": "Question not found in this interview"}, status=status.HTTP_404_NOT_FOUND)
         
         # get feedback on answer
-        feedback = open_ai.get_feedback(text)
+        feedback = OpenAIClient.get_feedback(text)
 
         interview_question.AI_feedback = feedback
         interview_question.save()

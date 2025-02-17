@@ -52,31 +52,3 @@ class OpenAIClient:
             max_tokens=100
         )
         return response.choices[0].text.strip()
-
-
-
-
-
-
-# client = OpenAI(
-#   api_key="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"
-# )
-
-# conversation_history = [
-#     {"role": "system", "content": "You are a human resources worker with moderate technical experience; ask pointed, open-ended, questions."}
-# ]
-
-# def start_interview(description, tasks):
-#     input = f"Ask me a an interview question on one of the following topics: {description} {tasks}"
-
-#     conversation_history.append({"role": "user", "content": input})
-
-#     response = client.chat.completions.create(
-#         model="gpt-4o-mini",
-#         messages=conversation_history
-#     )
-
-#     ai_reply = response.choices[0].message.content
-#     conversation_history.append({"role": "assistant", "content": ai_reply})
-
-#     return conversation_history
