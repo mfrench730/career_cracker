@@ -1,6 +1,6 @@
 import { Link, useLocation } from 'react-router-dom'
 import { useAuth } from '../../../context/AuthContext'
-import styles from './styles.module.css'
+import styles from '@/styles/sidebar.module.css'
 
 interface SidebarProps {
   isOpen: boolean
@@ -16,7 +16,7 @@ const NAVIGATION_ITEMS = [
   {
     path: '/interview',
     icon: 'bx-code-alt',
-    label: 'Interview',
+    label: 'Interview Practice',
   },
   {
     path: '/jobs',

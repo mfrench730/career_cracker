@@ -1,10 +1,18 @@
 import { useState, useRef, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 import { useAuth } from '../../../context/AuthContext'
-import styles from './styles.module.css'
+import styles from '@/styles/header.module.css'
 
 interface HeaderProps {
   isOpen: boolean
+}
+
+const PAGE_TITLES: { [key: string]: string } = {
+  '/dashboard': 'Dashboard',
+  '/interview': 'Interview Practice',
+  '/jobs': 'Jobs',
+  '/profile': 'Profile',
+  '/settings': 'Settings',
 }
 
 export default function Header({ isOpen }: HeaderProps) {
@@ -13,6 +21,20 @@ export default function Header({ isOpen }: HeaderProps) {
   const profileRef = useRef<HTMLDivElement>(null)
   const { logout } = useAuth()
   const navigate = useNavigate()
+  const location = useLocation()
+
+  const getPageTitle = () => {
+    if (PAGE_TITLES[location.pathname]) {
+      return PAGE_TITLES[location.pathname]
+    }
+
+    const pathSegments = Object.keys(PAGE_TITLES)
+    const matchedRoute = pathSegments.find((route) =>
+      location.pathname.startsWith(route)
+    )
+
+    return matchedRoute ? PAGE_TITLES[matchedRoute] : 'CareerCracker'
+  }
 
   const handleSignOut = async (e: React.MouseEvent) => {
     e.preventDefault()
@@ -45,7 +67,7 @@ export default function Header({ isOpen }: HeaderProps) {
   return (
     <header className={`${styles.header} ${isOpen ? styles.open : ''}`}>
       <div className={styles.headerLeft}>
-        <h1>Dashboard</h1>
+        <h1>{getPageTitle()}</h1>
       </div>
 
       <div className={styles.headerRight}>
