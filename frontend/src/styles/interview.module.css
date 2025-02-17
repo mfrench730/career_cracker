@@ -1,0 +1,242 @@
+:root {
+  --primary-color: #1a73e8;
+  --secondary-color: #34a853;
+  --text-primary: #202124;
+  --text-secondary: #5f6368;
+  --background-light: #f8f9fa;
+  --border-color: #dadce0;
+}
+
+.interviewContainer {
+  min-height: calc(100vh - 70px);
+  background-color: var(--background-light);
+  padding: 1rem;
+  font-family: 'Inter', 'Roboto', -apple-system, BlinkMacSystemFont, sans-serif;
+  max-width: 1440px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: linear-gradient(to right, var(--card), var(--background));
+  border-radius: 1rem;
+  padding: 2rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+}
+
+.header:hover {
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.08);
+}
+
+.headerButton {
+  position: relative;
+  padding: 0.75rem 1.5rem;
+  background: linear-gradient(135deg, #6b46c1, #9f7aea);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.headerButton::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    120deg,
+    transparent,
+    rgba(255, 255, 255, 0.3),
+    transparent
+  );
+  transition: all 0.6s ease;
+}
+
+.headerButton:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.headerButton:hover::before {
+  left: 100%;
+}
+
+.interviewGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 1.5rem;
+  width: 100%;
+  justify-content: center;
+}
+
+.headerButton:active {
+  transform: translateY(1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.pageTitle {
+  font-size: 2rem;
+  font-weight: 700;
+  background: linear-gradient(45deg, #6b46c1, #9f7aea);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 0.5rem;
+}
+
+.pageSubtitle {
+  color: var(--text-secondary);
+  font-size: 1rem;
+}
+
+.interviewGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 1.5rem;
+  width: 100%;
+}
+
+.interviewCard {
+  display: flex;
+  flex-direction: column;
+  background: white;
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.05);
+  padding: 1.5rem;
+  gap: 1rem;
+  height: 100%;
+  max-height: 400px;
+  position: relative;
+  justify-content: space-between; /* Add this */
+}
+
+.interviewCard:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 12px 20px rgba(0, 0, 0, 0.08);
+  border-color: var(--primary-color);
+}
+
+.cardTitle {
+  background: linear-gradient(45deg, #6b46c1, #9f7aea);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-weight: 600;
+  font-size: 1.125rem;
+}
+
+.progressInfo,
+.timeInfo {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  white-space: nowrap;
+  width: 100%;
+  padding: 0.25rem 0;
+}
+
+.progressInfo {
+  margin-bottom: 0;
+}
+
+.timeInfo {
+  margin-bottom: 0.5rem;
+}
+
+.lastQuestion {
+  color: var(--text-primary);
+  font-weight: 500;
+  margin-top: 0.25rem;
+  display: -webkit-box;
+  -webkit-line-clamp: 2; /* Limit to 3 lines */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 100%; /* Add this to ensure full width */
+  min-height: 4.5em; /* Add this to maintain consistent height for 3 lines */
+  line-height: 1.5; /* Add this for consistent line spacing */
+}
+
+.cardFooter {
+  margin-top: auto; /* Add this */
+  width: 100%; /* Add this */
+}
+
+.reviewButton {
+  width: 100%;
+  background: linear-gradient(to right, #6b46c1, #9f7aea);
+  color: white;
+  border: none;
+  padding: 0.75rem 1rem;
+  border-radius: 12px;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  margin-bottom: 1%;
+}
+
+.reviewButton:hover {
+  opacity: 0.9;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.reviewButton:disabled {
+  background-color: var(--text-secondary);
+  cursor: not-allowed;
+}
+
+@media (max-width: 1280px) {
+  .interviewContainer {
+    padding: 1rem;
+    max-width: 95%;
+  }
+
+  .interviewGrid {
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  .interviewContainer {
+    padding: 0.5rem;
+    max-width: 100%;
+  }
+
+  .interviewGrid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+}
+
+@media print {
+  .interviewContainer {
+    background: white;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.interviewCard {
+  animation: fadeIn 0.5s ease forwards;
+  opacity: 0;
+  animation-delay: calc(var(--index) * 0.1s);
+}

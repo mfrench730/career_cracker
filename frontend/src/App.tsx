@@ -74,7 +74,7 @@ const AppRoutes = () => {
         }
       />
       <Route
-        path="/interview"
+        path="/interview/*"
         element={
           <ProtectedRoute>
             <Interview />
@@ -90,10 +90,8 @@ const AppRoutes = () => {
         }
       />
 
-      {/* Default Route */}
       <Route path="/" element={<Navigate to="/dashboard" replace />} />
 
-      {/* Catch all route */}
       <Route path="*" element={<Navigate to="/dashboard" replace />} />
     </Routes>
   )
