@@ -12,7 +12,7 @@ export default defineConfig({
     },
     proxy: {
       '/api': {
-        target: 'http://127.0.0.1:8000',
+        target: 'http://backend:8000', // Changed from '127.0.0.1' to 'backend'
         changeOrigin: true,
         secure: false,
       },

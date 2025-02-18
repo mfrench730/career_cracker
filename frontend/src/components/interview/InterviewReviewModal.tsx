@@ -26,12 +26,10 @@ const InterviewReviewModal: React.FC<InterviewReviewModalProps> = ({
       if (!isOpen) return
 
       try {
-        // If no past interviews, fetch them
         if (pastInterviews.length === 0) {
           await fetchPastInterviews()
         }
 
-        // Find the specific interview
         const interview = pastInterviews.find((i) => i.id === interviewId)
 
         if (interview) {

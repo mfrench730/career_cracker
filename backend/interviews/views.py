@@ -1,4 +1,3 @@
-# interviews/views.py
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
@@ -14,7 +13,6 @@ from django.core.paginator import Paginator
 
 logger = logging.getLogger(__name__)
 
-# Add this view class
 class PastInterviewListView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -52,20 +50,22 @@ class StartInterview(APIView):
     
     def post(self, request):
         try:
-            # Get 5 random questions
             questions = list(CSQuestion.objects.all())
             if len(questions) < 5:
                 return Response({"error": "Not enough questions available"}, status=400)
             
             selected_questions = random.sample(questions, 5)
             
-            # Create interview
-            interview = Interview.objects.create(user=request.user)
+            interview = Interview.objects.create(
+                user=request.user,
+                status="IN_PROGRESS"
+            )
             interview.questions.set(selected_questions)
             
             return Response({
-                "interview_id": interview.id,
-                "questions": [q.question_text for q in selected_questions]
+                "id": interview.id,
+                "status": interview.status,
+                "start_time": interview.start_time,
             }, status=201)
             
         except Exception as e:
@@ -78,38 +78,60 @@ class SubmitAnswer(APIView):
     def post(self, request, interview_id):
         try:
             interview = Interview.objects.get(id=interview_id, user=request.user)
-            question_id = request.data.get('question_id')
-            response_text = request.data.get('response')
+            question_id = request.data.get('questionId')
+            response_text = request.data.get('text')
+            
+            if not question_id or not response_text:
+                return Response({"error": "Missing question ID or response text"}, status=400)
             
             question = CSQuestion.objects.get(id=question_id)
             
-            # Get AI feedback
-            openai.api_key = settings.OPENAI_API_KEY
-            prompt = f"""Provide concise feedback for this coding interview response.
+            client = openai.OpenAI(api_key=settings.OPENAI_API_KEY)
             
+            prompt = f"""
+            Imagine you're conducting a live mock interview. The candidate has just answered the following coding question. Please provide personalized, conversational feedback as if you're speaking directly to the candidate. Highlight what they did well, identify areas for improvement, and offer specific suggestions to help them progress.
+
             Question: {question.question_text}
-            Response: {response_text}
-            
-            Feedback:"""
-            
-            ai_response = openai.Completion.create(
-                engine="text-davinci-003",
-                prompt=prompt,
+
+            Candidate Response: {response_text}
+
+            Feedback:
+            """
+                        
+            completion = client.chat.completions.create(
+                model="gpt-3.5-turbo",
+                messages=[
+                    {
+                        "role": "system", 
+                        "content": (
+                            "You are an expert technical interviewer. Engage with the candidate as if in a live mock interview, providing direct, friendly, and constructive feedback."
+                        )
+                    },
+                    {"role": "user", "content": prompt}
+                ],
                 max_tokens=150,
                 temperature=0.7
             )
             
-            feedback = ai_response.choices[0].text.strip()
+            feedback = completion.choices[0].message.content.strip()
             
-            # Save answer
-            InterviewAnswer.objects.create(
+            answer = InterviewAnswer.objects.create(
                 interview=interview,
                 question=question,
                 user_response=response_text,
                 ai_feedback=feedback
             )
             
-            return Response({"feedback": feedback})
+            answered_count = InterviewAnswer.objects.filter(interview=interview).count()
+            
+            return Response({
+                "id": answer.id,
+                "question_text": question.question_text,
+                "user_response": response_text,
+                "ai_feedback": feedback,
+                "created_at": answer.created_at,
+                "question_number": answered_count
+            })
             
         except Interview.DoesNotExist:
             return Response({"error": "Interview not found"}, status=404)
@@ -129,3 +151,44 @@ class CompleteInterview(APIView):
             return Response({"status": "completed"})
         except Interview.DoesNotExist:
             return Response({"error": "Interview not found"}, status=404)
+
+class NextQuestionView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        try:
+            interview = Interview.objects.filter(
+                user=request.user,
+                status="IN_PROGRESS"
+            ).latest('start_time')
+
+            answered_questions = InterviewAnswer.objects.filter(
+                interview=interview
+            ).values_list('question_id', flat=True)
+
+            next_question = interview.questions.exclude(
+                id__in=answered_questions
+            ).order_by('?').first()
+
+            if not next_question:
+                return Response(
+                    {"message": "No more questions available"},
+                    status=status.HTTP_404_NOT_FOUND
+                )
+
+            return Response({
+                "id": next_question.id,
+                "question": next_question.question_text
+            })
+
+        except Interview.DoesNotExist:
+            return Response(
+                {"error": "No active interview found"},
+                status=status.HTTP_404_NOT_FOUND
+            )
+        except Exception as e:
+            logger.error(f"Error fetching next question: {str(e)}")
+            return Response(
+                {"error": "Failed to fetch next question"},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )

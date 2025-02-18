@@ -15,8 +15,14 @@ const ActiveInterviewModal: React.FC<InterviewModalProps> = ({
   isOpen,
   onClose,
 }) => {
-  const { currentSession, currentQuestion, submitResponse, completeInterview } =
-    useInterview()
+  const {
+    currentSession,
+    currentQuestion,
+    submitResponse,
+    completeInterview,
+    skipQuestion,
+    resetInterview,
+  } = useInterview()
 
   const [response, setResponse] = useState('')
   const [feedback, setFeedback] = useState<string | null>(null)
@@ -24,10 +30,43 @@ const ActiveInterviewModal: React.FC<InterviewModalProps> = ({
   const [isListening, setIsListening] = useState(false)
   const [isResponseSubmitted, setIsResponseSubmitted] = useState(false)
   const [showError, setShowError] = useState(false)
+  const [isLastQuestion, setIsLastQuestion] = useState(false)
+  const [currentQuestionNumber, setCurrentQuestionNumber] = useState(1)
+  const [displayedFeedback, setDisplayedFeedback] = useState('')
+  const [isTyping, setIsTyping] = useState(false)
 
   const recognitionRef = useRef<SpeechRecognition | null>(null)
   const hasRecognitionSupport =
     'SpeechRecognition' in window || 'webkitSpeechRecognition' in window
+
+  useEffect(() => {
+    if (isOpen) {
+      setCurrentQuestionNumber((prev) => Math.min(prev, 5))
+    }
+  }, [isOpen])
+
+  useEffect(() => {
+    if (isOpen && !currentSession) {
+      setCurrentQuestionNumber(1)
+    }
+  }, [isOpen, currentSession])
+
+  useEffect(() => {
+    if (feedback && feedback !== displayedFeedback) {
+      setIsTyping(true)
+      let index = 0
+      const timer = setInterval(() => {
+        setDisplayedFeedback(feedback.substring(0, index + 1))
+        index++
+        if (index >= feedback.length) {
+          clearInterval(timer)
+          setIsTyping(false)
+        }
+      }, 30)
+
+      return () => clearInterval(timer)
+    }
+  }, [feedback])
 
   const validateAndSubmit = useCallback(async () => {
     if (!response.trim()) {
@@ -38,15 +77,36 @@ const ActiveInterviewModal: React.FC<InterviewModalProps> = ({
     setShowError(false)
     setIsSubmitting(true)
     try {
+      if (!currentQuestion) {
+        throw new Error('No current question found')
+      }
+
       const feedbackResponse = await submitResponse(response)
       setFeedback(feedbackResponse.ai_feedback)
       setIsResponseSubmitted(true)
+
+      setIsLastQuestion(currentQuestionNumber >= 5)
     } catch (error) {
       console.error('Error submitting response:', error)
     } finally {
       setIsSubmitting(false)
     }
-  }, [response, submitResponse])
+  }, [response, submitResponse, currentQuestion])
+
+  const handleSkipQuestion = useCallback(async () => {
+    setResponse('')
+    setFeedback(null)
+    setIsResponseSubmitted(false)
+    await skipQuestion()
+  }, [skipQuestion])
+
+  const handleNextQuestion = useCallback(async () => {
+    setResponse('')
+    setFeedback(null)
+    setIsResponseSubmitted(false)
+    setCurrentQuestionNumber((prev) => Math.min(prev + 1, 5))
+    await skipQuestion()
+  }, [skipQuestion])
 
   const handleMicToggle = useCallback(() => {
     if (!recognitionRef.current) return
@@ -65,8 +125,10 @@ const ActiveInterviewModal: React.FC<InterviewModalProps> = ({
       recognitionRef.current.stop()
     }
     completeInterview()
+    setCurrentQuestionNumber(1)
+    resetInterview()
     onClose()
-  }, [isListening, onClose, completeInterview])
+  }, [isListening, onClose, completeInterview, resetInterview])
 
   useEffect(() => {
     if (hasRecognitionSupport) {
@@ -129,13 +191,16 @@ const ActiveInterviewModal: React.FC<InterviewModalProps> = ({
       setFeedback(null)
       setIsListening(false)
       setIsResponseSubmitted(false)
+      if (!currentSession) {
+        setCurrentQuestionNumber(1)
+      }
     }
     return () => {
       if (recognitionRef.current) {
         recognitionRef.current.stop()
       }
     }
-  }, [isOpen])
+  }, [isOpen, currentSession])
 
   if (!hasRecognitionSupport) {
     return (
@@ -168,11 +233,13 @@ const ActiveInterviewModal: React.FC<InterviewModalProps> = ({
       <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
         <div className={styles.modalHeader}>
           <h2 className={styles.modalTitle}>Interview Question</h2>
+          <div className={styles.questionCount}>
+            Question {currentQuestionNumber} of 5
+          </div>
           <button className={styles.closeButton} onClick={onClose}>
             <X size={18} />
           </button>
         </div>
-
         <div className={styles.modalBody}>
           <div className={styles.interviewGrid}>
             <div className={styles.questionSection}>
@@ -230,7 +297,10 @@ const ActiveInterviewModal: React.FC<InterviewModalProps> = ({
                     <AlertDescription>
                       <div className={styles.feedbackContent}>
                         <h4 className={styles.feedbackTitle}>AI Feedback:</h4>
-                        <p className={styles.feedbackText}>{feedback}</p>
+                        <p className={styles.feedbackText}>
+                          {displayedFeedback}
+                          {isTyping && <span className={styles.cursor}>|</span>}
+                        </p>
                       </div>
                     </AlertDescription>
                   </Alert>
@@ -239,26 +309,40 @@ const ActiveInterviewModal: React.FC<InterviewModalProps> = ({
             </div>
           </div>
         </div>
-
         <div className={styles.modalFooter}>
-          <Button
-            variant="secondary"
-            onClick={validateAndSubmit}
-            disabled={isResponseSubmitted || isSubmitting}
-            className={`${styles.submitButton} ${
-              isResponseSubmitted || isSubmitting ? styles.disabledButton : ''
-            }`}
-          >
-            {isSubmitting ? (
-              <div className="flex items-center">Analyzing...</div>
-            ) : (
-              <div className="flex items-center">
-                <Send size={16} className="mr-2" />
-                Submit Response
-              </div>
-            )}
-          </Button>
-          {feedback && (
+          {!isLastQuestion && (
+            <Button
+              variant="outline"
+              onClick={
+                isResponseSubmitted ? handleNextQuestion : handleSkipQuestion
+              }
+              className={styles.skipButton}
+              disabled={isSubmitting}
+            >
+              <SkipForward size={16} className="mr-2" />
+              {isResponseSubmitted ? 'Next Question' : 'Skip Question'}
+            </Button>
+          )}
+
+          {!isResponseSubmitted && (
+            <Button
+              variant="secondary"
+              onClick={validateAndSubmit}
+              disabled={isSubmitting}
+              className={styles.submitButton}
+            >
+              {isSubmitting ? (
+                <div className="flex items-center">Analyzing...</div>
+              ) : (
+                <div className="flex items-center">
+                  <Send size={16} className="mr-2" />
+                  Submit Response
+                </div>
+              )}
+            </Button>
+          )}
+
+          {isResponseSubmitted && isLastQuestion && (
             <Button
               variant="default"
               onClick={handleComplete}

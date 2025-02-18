@@ -46,7 +46,6 @@ const PublicRoute = ({ children }: { children: React.ReactNode }) => {
 
 const AppRoutes = () => (
   <Routes>
-    {/* Public Routes */}
     <Route
       path="/signin"
       element={
@@ -64,7 +63,6 @@ const AppRoutes = () => (
       }
     />
 
-    {/* Protected Routes */}
     <Route
       path="/dashboard"
       element={

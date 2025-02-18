@@ -18,7 +18,7 @@ import { PastInterview } from '@/types/interview'
 const InterviewStart: React.FC = () => {
   const {
     startInterview,
-    pastInterviews = [], // Provide default empty array
+    pastInterviews = [],
     fetchPastInterviews,
     isLoading,
     error,
@@ -30,7 +30,6 @@ const InterviewStart: React.FC = () => {
   const [isNewInterviewOpen, setIsNewInterviewOpen] = useState(false)
   const [isStartingInterview, setIsStartingInterview] = useState(false)
 
-  // Fetch past interviews when component mounts
   useEffect(() => {
     const loadInterviews = async () => {
       try {
@@ -67,7 +66,6 @@ const InterviewStart: React.FC = () => {
     fetchPastInterviews().catch(console.error)
   }, [fetchPastInterviews])
 
-  // Render interview card
   const renderInterviewCard = (interview: PastInterview, index: number) => {
     if (!interview) return null
 

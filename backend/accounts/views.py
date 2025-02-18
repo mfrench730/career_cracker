@@ -60,7 +60,7 @@ class LoginView(APIView):
             )
 
 class SignUpView(APIView):
-    permission_classes = [AllowAny]  # Added missing permission class
+    permission_classes = [AllowAny]
      
     def post(self, request):
         try:
@@ -68,7 +68,6 @@ class SignUpView(APIView):
             if serializer.is_valid():
                 user = serializer.save()
                 
-                # Generate tokens for immediate login after signup
                 refresh = RefreshToken.for_user(user)
                 
                 return Response({

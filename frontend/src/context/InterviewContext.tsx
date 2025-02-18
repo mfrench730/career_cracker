@@ -17,10 +17,12 @@ interface InterviewContextType {
 
   startInterview: () => Promise<void>
   getNextQuestion: () => Promise<void>
+  skipQuestion: () => Promise<void>
   submitResponse: (response: string) => Promise<InterviewFeedback>
   completeInterview: () => Promise<void>
   fetchPastInterviews: (page?: number, limit?: number) => Promise<void>
   clearError: () => void
+  resetInterview: () => void
 }
 
 const InterviewContext = createContext<InterviewContextType | undefined>(
@@ -30,7 +32,6 @@ const InterviewContext = createContext<InterviewContextType | undefined>(
 export const InterviewProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  // State
   const [currentSession, setCurrentSession] = useState<InterviewSession | null>(
     null
   )
@@ -42,6 +43,12 @@ export const InterviewProvider: React.FC<{ children: React.ReactNode }> = ({
   const [error, setError] = useState<string | null>(null)
 
   const clearError = useCallback(() => {
+    setError(null)
+  }, [])
+
+  const resetInterview = useCallback(() => {
+    setCurrentSession(null)
+    setCurrentQuestion(null)
     setError(null)
   }, [])
 
@@ -84,7 +91,6 @@ export const InterviewProvider: React.FC<{ children: React.ReactNode }> = ({
       setCurrentSession(null)
       setCurrentQuestion(null)
 
-      // Refresh the past interviews list
       await fetchPastInterviews()
     } catch (error) {
       handleError(error)
@@ -104,7 +110,6 @@ export const InterviewProvider: React.FC<{ children: React.ReactNode }> = ({
       const question = await interviewService.getNextQuestion()
       setCurrentQuestion(question)
     } catch (error) {
-      // Special handling for when there are no more questions
       if (
         error instanceof Error &&
         error.message.includes('No more questions available')
@@ -123,10 +128,12 @@ export const InterviewProvider: React.FC<{ children: React.ReactNode }> = ({
     setIsLoading(true)
     setError(null)
     try {
+      setCurrentSession(null)
+      setCurrentQuestion(null)
+
       const session = await interviewService.startInterview()
       setCurrentSession(session)
 
-      // Get the first question automatically
       const question = await interviewService.getNextQuestion()
       setCurrentQuestion(question)
     } catch (error) {
@@ -135,6 +142,29 @@ export const InterviewProvider: React.FC<{ children: React.ReactNode }> = ({
       setIsLoading(false)
     }
   }, [handleError])
+
+  const skipQuestion = useCallback(async () => {
+    if (!currentSession) {
+      throw new Error('No active interview session')
+    }
+
+    setIsLoading(true)
+    try {
+      const nextQuestion = await interviewService.getNextQuestion()
+      setCurrentQuestion(nextQuestion)
+    } catch (error) {
+      if (
+        error instanceof Error &&
+        error.message.includes('No more questions available')
+      ) {
+        await completeInterview()
+      } else {
+        handleError(error)
+      }
+    } finally {
+      setIsLoading(false)
+    }
+  }, [currentSession, handleError, completeInterview])
 
   const submitResponse = useCallback(
     async (response: string): Promise<InterviewFeedback> => {
@@ -170,10 +200,12 @@ export const InterviewProvider: React.FC<{ children: React.ReactNode }> = ({
     error,
     startInterview,
     getNextQuestion,
+    skipQuestion,
     submitResponse,
     completeInterview,
     fetchPastInterviews,
     clearError,
+    resetInterview,
   }
 
   return (

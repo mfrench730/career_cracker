@@ -1,7 +1,7 @@
-// src/types/interview.ts
 export interface InterviewQuestion {
   id: number
   question: string
+  question_number?: number
 }
 
 export interface InterviewFeedback {
@@ -10,6 +10,7 @@ export interface InterviewFeedback {
   user_response: string
   ai_feedback: string
   created_at: string
+  question_number: number
 }
 
 export interface InterviewSession {

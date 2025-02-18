@@ -13,7 +13,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', 'your-default-secret-key')
 DEBUG = True
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', '[::1]']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'backend', '0.0.0.0', '[::1]']
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -50,11 +50,8 @@ DATABASES = {
         'NAME': 'careercracker',
         'USER': 'postgres',
         'PASSWORD': 'postgres',
-        'HOST': 'db',
+        'HOST': 'db',  # Changed from 'localhost' to 'db'
         'PORT': '5432',
-        'TEST': {
-            'NAME': 'test_careercracker',
-        }
     }
 }
 

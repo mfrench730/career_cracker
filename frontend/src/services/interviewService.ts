@@ -1,4 +1,3 @@
-// src/services/interviewService.ts
 import axios, { AxiosError } from 'axios'
 import {
   InterviewQuestion,
@@ -53,7 +52,7 @@ class InterviewService {
   async startInterview(): Promise<InterviewSession> {
     try {
       console.log('Starting interview...')
-      console.log('Token:', localStorage.getItem('token')) // Check token
+      console.log('Token:', localStorage.getItem('token'))
 
       const response = await this.apiClient.post<InterviewSession>(
         '/interviews/start/'
@@ -62,7 +61,6 @@ class InterviewService {
       return response.data
     } catch (error) {
       console.error('Error starting interview:', error)
-      // More detailed error logging
       if (axios.isAxiosError(error)) {
         console.error('Response:', error.response)
         console.error('Request:', error.request)
