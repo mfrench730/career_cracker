@@ -4,14 +4,7 @@ import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import styles from '@/styles/activeInterviewModal.module.css'
-
-const mockQuestions = [
-  'Tell me about a challenging project you worked on recently.',
-  'How do you handle conflicts in a team environment?',
-  'Describe a situation where you had to learn a new technology quickly.',
-  "What's your approach to debugging complex issues?",
-  'How do you maintain work-life balance in a fast-paced environment?',
-]
+import { useInterview } from '@/context/InterviewContext'
 
 interface InterviewModalProps {
   isOpen: boolean
@@ -22,18 +15,19 @@ const ActiveInterviewModal: React.FC<InterviewModalProps> = ({
   isOpen,
   onClose,
 }) => {
-  const [currentQuestion, setCurrentQuestion] = useState(0)
+  const { currentSession, currentQuestion, submitResponse, completeInterview } =
+    useInterview()
+
   const [response, setResponse] = useState('')
   const [feedback, setFeedback] = useState<string | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isListening, setIsListening] = useState(false)
   const [isResponseSubmitted, setIsResponseSubmitted] = useState(false)
+  const [showError, setShowError] = useState(false)
 
   const recognitionRef = useRef<SpeechRecognition | null>(null)
   const hasRecognitionSupport =
     'SpeechRecognition' in window || 'webkitSpeechRecognition' in window
-
-  const [showError, setShowError] = useState(false)
 
   const validateAndSubmit = useCallback(async () => {
     if (!response.trim()) {
@@ -44,18 +38,35 @@ const ActiveInterviewModal: React.FC<InterviewModalProps> = ({
     setShowError(false)
     setIsSubmitting(true)
     try {
-      // TODO: Replace with actual API call
-      await new Promise((resolve) => setTimeout(resolve, 1500))
-      setFeedback(
-        'Your response effectively communicated the main points. Consider providing more specific examples and metrics to strengthen your answer. Try structuring your response using the STAR method for better clarity.'
-      )
+      const feedbackResponse = await submitResponse(response)
+      setFeedback(feedbackResponse.ai_feedback)
       setIsResponseSubmitted(true)
     } catch (error) {
       console.error('Error submitting response:', error)
     } finally {
       setIsSubmitting(false)
     }
-  }, [response])
+  }, [response, submitResponse])
+
+  const handleMicToggle = useCallback(() => {
+    if (!recognitionRef.current) return
+
+    if (isListening) {
+      recognitionRef.current.stop()
+      setIsListening(false)
+    } else {
+      recognitionRef.current.start()
+      setIsListening(true)
+    }
+  }, [isListening])
+
+  const handleComplete = useCallback(() => {
+    if (isListening && recognitionRef.current) {
+      recognitionRef.current.stop()
+    }
+    completeInterview()
+    onClose()
+  }, [isListening, onClose, completeInterview])
 
   useEffect(() => {
     if (hasRecognitionSupport) {
@@ -114,7 +125,6 @@ const ActiveInterviewModal: React.FC<InterviewModalProps> = ({
 
   useEffect(() => {
     if (isOpen) {
-      setCurrentQuestion(0)
       setResponse('')
       setFeedback(null)
       setIsListening(false)
@@ -126,42 +136,6 @@ const ActiveInterviewModal: React.FC<InterviewModalProps> = ({
       }
     }
   }, [isOpen])
-
-  const handleMicToggle = useCallback(() => {
-    if (!recognitionRef.current) return
-
-    if (isListening) {
-      recognitionRef.current.stop()
-      setIsListening(false)
-    } else {
-      recognitionRef.current.start()
-      setIsListening(true)
-    }
-  }, [isListening])
-
-  const handleNext = useCallback(() => {
-    if (currentQuestion < mockQuestions.length - 1) {
-      setCurrentQuestion((prev) => prev + 1)
-      setResponse('')
-      setFeedback(null)
-      setIsResponseSubmitted(false)
-      if (isListening && recognitionRef.current) {
-        recognitionRef.current.stop()
-      }
-    }
-  }, [currentQuestion, isListening])
-
-  const handleSkip = useCallback(() => {
-    setShowError(false)
-    handleNext()
-  }, [handleNext])
-
-  const handleComplete = useCallback(() => {
-    if (isListening && recognitionRef.current) {
-      recognitionRef.current.stop()
-    }
-    onClose()
-  }, [isListening, onClose])
 
   if (!hasRecognitionSupport) {
     return (
@@ -186,19 +160,14 @@ const ActiveInterviewModal: React.FC<InterviewModalProps> = ({
     )
   }
 
-  if (!isOpen) return null
+  if (!isOpen || !currentQuestion) return null
 
   return (
     <>
       <div className={styles.modalOverlay} onClick={onClose} />
       <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
         <div className={styles.modalHeader}>
-          <h2 className={styles.modalTitle}>
-            Interview Question {currentQuestion + 1}
-          </h2>
-          <p className={styles.modalDescription}>
-            Question {currentQuestion + 1} of {mockQuestions.length}
-          </p>
+          <h2 className={styles.modalTitle}>Interview Question</h2>
           <button className={styles.closeButton} onClick={onClose}>
             <X size={18} />
           </button>
@@ -208,9 +177,7 @@ const ActiveInterviewModal: React.FC<InterviewModalProps> = ({
           <div className={styles.interviewGrid}>
             <div className={styles.questionSection}>
               <h3 className={styles.sectionTitle}>Question:</h3>
-              <p className={styles.questionText}>
-                {mockQuestions[currentQuestion]}
-              </p>
+              <p className={styles.questionText}>{currentQuestion.question}</p>
             </div>
 
             <div className={styles.responseSection}>
@@ -275,51 +242,32 @@ const ActiveInterviewModal: React.FC<InterviewModalProps> = ({
 
         <div className={styles.modalFooter}>
           <Button
-            variant="outline"
-            onClick={handleSkip}
+            variant="secondary"
+            onClick={validateAndSubmit}
             disabled={isResponseSubmitted || isSubmitting}
-            className={`${styles.skipButton} ${
+            className={`${styles.submitButton} ${
               isResponseSubmitted || isSubmitting ? styles.disabledButton : ''
             }`}
           >
-            <SkipForward size={16} className="mr-2" />
-            Skip Question
-          </Button>
-          <div className={styles.rightButtons}>
-            <Button
-              variant="secondary"
-              onClick={validateAndSubmit}
-              disabled={isResponseSubmitted || isSubmitting}
-              className={`${styles.submitButton} ${
-                isResponseSubmitted || isSubmitting ? styles.disabledButton : ''
-              }`}
-            >
-              {isSubmitting ? (
-                <div className="flex items-center">Analyzing...</div>
-              ) : (
-                <div className="flex items-center">
-                  <Send size={16} className="mr-2" />
-                  Submit Response
-                </div>
-              )}
-            </Button>
-            {feedback && (
-              <Button
-                variant="default"
-                onClick={
-                  currentQuestion < mockQuestions.length - 1
-                    ? handleNext
-                    : handleComplete
-                }
-                className={styles.completeButton}
-              >
-                <CheckCircle size={16} className="mr-2" />
-                {currentQuestion < mockQuestions.length - 1
-                  ? 'Next Question'
-                  : 'Complete Interview'}
-              </Button>
+            {isSubmitting ? (
+              <div className="flex items-center">Analyzing...</div>
+            ) : (
+              <div className="flex items-center">
+                <Send size={16} className="mr-2" />
+                Submit Response
+              </div>
             )}
-          </div>
+          </Button>
+          {feedback && (
+            <Button
+              variant="default"
+              onClick={handleComplete}
+              className={styles.completeButton}
+            >
+              <CheckCircle size={16} className="mr-2" />
+              Complete Interview
+            </Button>
+          )}
         </div>
       </div>
     </>

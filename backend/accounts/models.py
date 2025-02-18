@@ -13,9 +13,9 @@ class UserProfile(models.Model):
     major = models.CharField(max_length=255)
     education_level = models.CharField(max_length=255)
     experience_level = models.CharField(max_length=255)
-    preferred_interview_type = models.JSONField()  # Stores list as JSON
+    preferred_interview_type = models.JSONField()
     preferred_language = models.CharField(max_length=255)
-    resume_url = models.URLField()
+    resume_url = models.URLField(null=True, blank=True)
     
     def __str__(self):
         return self.full_name

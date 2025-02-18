@@ -1,171 +1,131 @@
-from rest_framework.response import Response
-from rest_framework import status, generics
+# interviews/views.py
 from rest_framework.views import APIView
-from interviews.utils.api_client import OpenAIClient
-from .models import Interview, InterviewQuestion
+from rest_framework.response import Response
+from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
-from .serializers import InterviewSerializer, InterviewQuestionSerializer
-from rest_framework.pagination import PageNumberPagination
-import os
+from django.utils import timezone
+import logging
+import random
+import openai
+from django.conf import settings
+from .models import Interview, CSQuestion, InterviewAnswer
+from .serializers import InterviewSerializer
+from django.core.paginator import Paginator
 
-api_key = os.environ.get("OPENAI_KEY")
-openai_client = OpenAIClient().get_client()  # reuse the singleton instance
+logger = logging.getLogger(__name__)
 
-# TODO: reed to get relevant user target career to use with prompt
-
-
-# GET /interviews/questions/next
-class NextQuestion(APIView):
-    permission_classes = [IsAuthenticated]
-
-    def post(self, request):
-        user = request.user
-
-        # get ongoing interview
-        try:
-            interview = Interview.objects.get(user=user, status="IN_PROGRESS")
-        except Interview.DoesNotExist:
-            return Response({"error": "No active interview found"}, status=status.HTTP_404_NOT_FOUND)
-        
-        # generate question
-        question = openai_client.generate_question(user, "Software Engineering")
-
-        interview.questions.append(question)
-        interview.save()
-
-        return Response({"question": question}, status=status.HTTP_200_OK)
-
-
-# POST /interviews/start
-class StartInterview(APIView):
-    permission_classes = [IsAuthenticated]  # Requires authentication
-
-    def post(self, request):
-        user = request.user  # Get the authenticated user
-
-        # Create a new interview for the user
-        interview = Interview.objects.create(user=user)
-
-        # Serialize the interview data
-        serializer = InterviewSerializer(interview)
-
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
-
-
-# POST /interviews/{sessionId}/complete
-class CompleteInterview(APIView):
-    permission_classes = [IsAuthenticated]
-
-    def post(self, request):
-        user = request.user
-
-        # get ongoing interview
-        try:
-            interview = Interview.objects.get(user=user, status="IN_PROGRESS")
-        except Interview.DoesNotExist:
-            return Response({"error": "No active interview found"}, status=status.HTTP_404_NOT_FOUND)
-        
-        interview.status = "COMPLETED"
-        interview.save()
-
-        serializer = InterviewSerializer(interview)
-
-        return Response(serializer.data, status=status.HTTP_200_OK)
-
-# POST /interviews/{sessionId}/submit
-class SubmitAnswer(APIView):
-    permission_classes = [IsAuthenticated]
-
-    def post(self, request):
-        user = request.user
-
-        question_id = request.data.get("questionId")
-        text = request.data.get("text")
-
-        if not question_id or text:
-            return Response({"error": "Error fetching question"}, status=status.HTTP_400_BAD_REQUEST)
-
-        # get ongoing interview
-        try:
-            interview = Interview.objects.get(user=user, status="IN_PROGRESS")
-        except Interview.DoesNotExist:
-            return Response({"error": "No active interview found"}, status=status.HTTP_404_NOT_FOUND)
-        
-        try:
-            interview_question = InterviewQuestion.objects.get(interview=interview, question_id=question_id)
-        except InterviewQuestion.DoesNotExist:
-            return Response({"error": "Question not found in this interview"}, status=status.HTTP_404_NOT_FOUND)
-        
-        # get feedback on answer
-        feedback = OpenAIClient.get_feedback(text)
-
-        interview_question.AI_feedback = feedback
-        interview_question.save()
-
-        serializer = InterviewQuestionSerializer(interview_question)
-
-        return Response(serializer.data, status=status.HTTP_200_OK)
-
-
-
-# GET /interviews/history?page=1&limit=10
-class GetHistory(APIView):
+# Add this view class
+class PastInterviewListView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        user = request.user
+        try:
+            page = int(request.query_params.get('page', 1))
+            limit = int(request.query_params.get('limit', 10))
+            
+            interviews = Interview.objects.filter(
+                user=request.user,
+                status="COMPLETED"
+            ).order_by('-start_time')
+            
+            paginator = Paginator(interviews, limit)
+            page_obj = paginator.get_page(page)
+            
+            serializer = InterviewSerializer(page_obj.object_list, many=True)
+            
+            return Response({
+                'results': serializer.data,
+                'count': paginator.count,
+                'page': page_obj.number,
+                'total_pages': paginator.num_pages
+            })
+            
+        except Exception as e:
+            logger.error(f"Error in PastInterviewListView: {str(e)}", exc_info=True)
+            return Response(
+                {"error": "Failed to fetch interviews"},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
 
-
-# Custom pagination class to handle paginated responses
-class InterviewPagination(PageNumberPagination):
-    page_size = 10  # Number of interviews per page
-    page_size_query_param = 'page_size'
-    max_page_size = 100
-
-
-class PastInterviewListView(generics.ListAPIView):
+class StartInterview(APIView):
     permission_classes = [IsAuthenticated]
-    serializer_class = InterviewSerializer
-    pagination_class = InterviewPagination
+    
+    def post(self, request):
+        try:
+            # Get 5 random questions
+            questions = list(CSQuestion.objects.all())
+            if len(questions) < 5:
+                return Response({"error": "Not enough questions available"}, status=400)
+            
+            selected_questions = random.sample(questions, 5)
+            
+            # Create interview
+            interview = Interview.objects.create(user=request.user)
+            interview.questions.set(selected_questions)
+            
+            return Response({
+                "interview_id": interview.id,
+                "questions": [q.question_text for q in selected_questions]
+            }, status=201)
+            
+        except Exception as e:
+            logger.error(f"Error starting interview: {str(e)}")
+            return Response({"error": "Failed to start interview"}, status=500)
 
-    def get_queryset(self):
-        # Get the user (authenticated user)
-        user = self.request.user
+class SubmitAnswer(APIView):
+    permission_classes = [IsAuthenticated]
+    
+    def post(self, request, interview_id):
+        try:
+            interview = Interview.objects.get(id=interview_id, user=request.user)
+            question_id = request.data.get('question_id')
+            response_text = request.data.get('response')
+            
+            question = CSQuestion.objects.get(id=question_id)
+            
+            # Get AI feedback
+            openai.api_key = settings.OPENAI_API_KEY
+            prompt = f"""Provide concise feedback for this coding interview response.
+            
+            Question: {question.question_text}
+            Response: {response_text}
+            
+            Feedback:"""
+            
+            ai_response = openai.Completion.create(
+                engine="text-davinci-003",
+                prompt=prompt,
+                max_tokens=150,
+                temperature=0.7
+            )
+            
+            feedback = ai_response.choices[0].text.strip()
+            
+            # Save answer
+            InterviewAnswer.objects.create(
+                interview=interview,
+                question=question,
+                user_response=response_text,
+                ai_feedback=feedback
+            )
+            
+            return Response({"feedback": feedback})
+            
+        except Interview.DoesNotExist:
+            return Response({"error": "Interview not found"}, status=404)
+        except Exception as e:
+            logger.error(f"Error submitting answer: {str(e)}")
+            return Response({"error": "Failed to process answer"}, status=500)
 
-        # Filter interviews by user and completed status (e.g., "COMPLETED" status)
-        return Interview.objects.filter(user=user, status="COMPLETED").order_by('-start_time')
-
-    def list(self, request):
-        # get the paginated queryset
-        queryset = self.get_queryset()
-        page = self.paginate_queryset(queryset)
-
-        if page is not None:
-            serializer = self.get_serializer(page, many=True)
-
-            # custom response to add questions, responses, and feedback
-            interviews_data = []
-            for interview in serializer.data:
-                interview_data = {
-                    "id": interview["id"],
-                    "date": interview["start_time"],
-                    "questions": []
-                }
-
-                # fetch the questions for the interview
-                interview_obj = Interview.objects.get(id=interview["id"])
-                interview_questions = InterviewQuestion.objects.filter(interview=interview_obj)
-
-                for question in interview_questions:
-                    question_data = {
-                        "question": question.question,
-                        "response": question.response,
-                        "feedback": question.AI_feedback
-                    }
-                    interview_data["questions"].append(question_data)
-
-                interviews_data.append(interview_data)
-
-            # return the paginated interviews with questions and feedback
-            return self.get_paginated_response(interviews_data)
-        return Response({"error": "No interviews found"}, status=status.HTTP_404_NOT_FOUND)
+class CompleteInterview(APIView):
+    permission_classes = [IsAuthenticated]
+    
+    def post(self, request, interview_id):
+        try:
+            interview = Interview.objects.get(id=interview_id, user=request.user)
+            interview.status = "COMPLETED"
+            interview.end_time = timezone.now()
+            interview.save()
+            return Response({"status": "completed"})
+        except Interview.DoesNotExist:
+            return Response({"error": "Interview not found"}, status=404)

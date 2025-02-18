@@ -1,12 +1,23 @@
+# interviews/models.py
 from django.db import models
-from accounts.models import UserProfile
+from django.contrib.auth.models import User
 
-# future use to store questions with category
-# # for question from OpenAI
-# class OpenAIQuestion(models.Model):
-#     # Model to store OpenAI API responses.
-#     openai_response = models.TextField()
-#     created_at = models.DateTimeField(auto_now_add=True)
+class CSQuestion(models.Model):
+    CATEGORY_CHOICES = [
+        ('ALG', 'Algorithms'),
+        ('DS', 'Data Structures'),
+        ('OOP', 'Object-Oriented Programming'),
+        ('DB', 'Databases'),
+        ('OS', 'Operating Systems'),
+    ]
+    
+    question_text = models.TextField()
+    category = models.CharField(max_length=3, choices=CATEGORY_CHOICES)
+    difficulty = models.PositiveSmallIntegerField(default=1)  # 1-5 scale
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.question_text[:100]
 
 class Interview(models.Model):
     STATUS_CHOICES = [
@@ -14,16 +25,21 @@ class Interview(models.Model):
         ("COMPLETED", "Completed"),
     ]
 
-    user = models.TextField()
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    questions = models.ManyToManyField(CSQuestion)
     start_time = models.DateTimeField(auto_now_add=True)
+    end_time = models.DateTimeField(null=True, blank=True)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="IN_PROGRESS")
-    question_list = models.JSONField(default=list)
 
-# for user information with question
-class InterviewQuestion(models.Model):
-    user_id = models.ForeignKey(UserProfile, on_delete=models.CASCADE)
-    question_id = models.IntegerField() # generated from serializer OpenAIResponseSerializer
-    question = models.TextField()
+    def __str__(self):
+        return f"Interview {self.id} - {self.user.username}"
+
+class InterviewAnswer(models.Model):
+    interview = models.ForeignKey(Interview, related_name='answers', on_delete=models.CASCADE)
+    question = models.ForeignKey(CSQuestion, on_delete=models.CASCADE)
     user_response = models.TextField()
-    AI_feedback = models.TextField()
-    in_interview = models.ForeignKey(Interview, on_delete=models.CASCADE, related_name="questions")
+    ai_feedback = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Answer for Interview {self.interview.id} - Question {self.question.id}"
