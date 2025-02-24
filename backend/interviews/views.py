@@ -23,8 +23,9 @@ class PastInterviewListView(APIView):
             
             interviews = Interview.objects.filter(
                 user=request.user,
-                status="COMPLETED"
+                status__in=["IN_PROGRESS", "COMPLETED"]
             ).order_by('-start_time')
+
             
             paginator = Paginator(interviews, limit)
             page_obj = paginator.get_page(page)
