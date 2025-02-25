@@ -11,7 +11,7 @@ class UserSignupSerializer(serializers.ModelSerializer):
     experience_level = serializers.CharField(required=True)
     preferred_interview_type = serializers.ListField(child=serializers.CharField(), required=True)
     preferred_language = serializers.CharField(required=True)
-    resume_url = serializers.URLField(required=False)
+    resume_url = serializers.URLField(required=False, allow_null=True)
     
     password = serializers.CharField(write_only=True, min_length=8)
     email = serializers.EmailField(required=True)
@@ -27,20 +27,30 @@ class UserSignupSerializer(serializers.ModelSerializer):
         return value
 
     def create(self, validated_data):
-        """Create a new user with hashed password and profile"""
-        password = validated_data.pop("password")
-        full_name = validated_data.pop("full_name")
-
-        username = validated_data.pop("username")  # Get the username
-        email = validated_data.pop("email")
-
-        # Create user
-        user = User.objects.create_user(username=username, email=email, password=password)  # Store username separately
-
-        # Create user profile
-        UserProfile.objects.create(user=user, full_name=full_name, **validated_data)
-
-        return user
+        """Create user and profile with error handling"""
+        try:
+            password = validated_data.pop("password")
+            profile_data = {
+                "full_name": validated_data.pop("full_name"),
+                "major": validated_data.pop("major"),
+                "education_level": validated_data.pop("education_level"),
+                "experience_level": validated_data.pop("experience_level"),
+                "preferred_interview_type": validated_data.pop("preferred_interview_type"),
+                "preferred_language": validated_data.pop("preferred_language"),
+                "resume_url": validated_data.pop("resume_url", None),
+            }
+            
+            user = User.objects.create_user(
+                username=validated_data["username"],
+                email=validated_data["email"],
+                password=password
+            )
+            
+            UserProfile.objects.create(user=user, **profile_data)
+            return user
+            
+        except KeyError as e:
+            raise serializers.ValidationError(f"Missing required field: {str(e)}")
 
     def validate_username(self, value):
         """Check if username is unique"""

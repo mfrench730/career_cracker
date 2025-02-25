@@ -276,6 +276,30 @@
   color: #9ca3af;
 }
 
+.cursor {
+  display: inline-block;
+  width: 2px;
+  animation: blink 1s infinite;
+  margin-left: 2px;
+}
+
+@keyframes blink {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+.feedbackText {
+  white-space: pre-wrap;
+  line-height: 1.5;
+}
+
 @keyframes fadeIn {
   from {
     opacity: 0;

@@ -1,38 +1,30 @@
 export interface InterviewQuestion {
   id: number
   question: string
-}
-
-export interface UserResponse {
-  id?: number
-  questionId: number
-  text: string
+  question_number?: number
 }
 
 export interface InterviewFeedback {
   id: number
-  questionId: number
-  userResponseId: number
-  aiFeedback: string
+  question_text: string
+  user_response: string
+  ai_feedback: string
+  created_at: string
+  question_number: number
 }
 
 export interface InterviewSession {
   id: number
-  userId: number
-  startTime: string
-  endTime?: string
+  start_time: string
+  end_time?: string
   status: 'IN_PROGRESS' | 'COMPLETED'
-  questions: InterviewQuestion[]
-  responses: UserResponse[]
-  feedbacks: InterviewFeedback[]
+  answers: InterviewFeedback[]
 }
 
 export interface PastInterview {
   id: number
-  date: string
-  questions: {
-    question: string
-    response: string
-    feedback: string
-  }[]
+  start_time: string
+  end_time: string
+  status: string
+  answers: InterviewFeedback[]
 }

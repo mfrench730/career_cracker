@@ -13,7 +13,11 @@ services:
     depends_on:
       db:
         condition: service_healthy
-    command: sh -c "python manage.py makemigrations && python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
+    command: >
+      sh -c "python manage.py makemigrations accounts interviews &&
+             python manage.py migrate &&
+             python manage.py loadquestions &&
+             python manage.py runserver 0.0.0.0:8000"
 
   frontend:
     build:
@@ -36,7 +40,6 @@ services:
 
   db:
     image: postgres:13
-    container_name: careercracker-db
     environment:
       POSTGRES_DB: careercracker
       POSTGRES_USER: postgres

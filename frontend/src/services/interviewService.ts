@@ -1,7 +1,6 @@
-import axios from 'axios'
+import axios, { AxiosError } from 'axios'
 import {
   InterviewQuestion,
-  UserResponse,
   InterviewFeedback,
   InterviewSession,
   PastInterview,
@@ -9,88 +8,122 @@ import {
 
 class InterviewService {
   private apiClient = axios.create({
-    baseURL: import.meta.env.VITE_API_BASE_URL || '/api',
+    baseURL: '/api',
     headers: {
       'Content-Type': 'application/json',
     },
+    withCredentials: true,
   })
 
-  async getNextQuestion(): Promise<InterviewQuestion> {
-    try {
-      const response = await this.apiClient.get('/interviews/questions/next')
-      return response.data
-    } catch (error) {
-      console.error('Error fetching next question:', error)
-      throw error
+  constructor() {
+    this.apiClient.interceptors.request.use(
+      (config) => {
+        const token = localStorage.getItem('token')
+        if (token) {
+          config.headers.Authorization = `Bearer ${token}`
+        }
+        return config
+      },
+      (error) => {
+        return Promise.reject(error)
+      }
+    )
+  }
+
+  private handleError(error: unknown) {
+    if (axios.isAxiosError(error)) {
+      const axiosError = error as AxiosError<{
+        error?: string
+        detail?: string
+      }>
+      const serverMessage =
+        axiosError.response?.data?.error || axiosError.response?.data?.detail
+      const errorMessage = serverMessage || axiosError.message
+      console.error('API Error:', {
+        status: axiosError.response?.status,
+        message: errorMessage,
+        url: axiosError.config?.url,
+      })
+      throw new Error(errorMessage)
     }
+    throw new Error('An unexpected error occurred')
   }
 
   async startInterview(): Promise<InterviewSession> {
     try {
-      const response = await this.apiClient.post('/interviews/start')
+      console.log('Starting interview...')
+      console.log('Token:', localStorage.getItem('token'))
+
+      const response = await this.apiClient.post<InterviewSession>(
+        '/interviews/start/'
+      )
+      console.log('Interview started successfully:', response.data)
       return response.data
     } catch (error) {
       console.error('Error starting interview:', error)
-      throw error
+      if (axios.isAxiosError(error)) {
+        console.error('Response:', error.response)
+        console.error('Request:', error.request)
+      }
+      throw this.handleError(error)
+    }
+  }
+
+  async getNextQuestion(): Promise<InterviewQuestion> {
+    try {
+      const response = await this.apiClient.get<InterviewQuestion>(
+        '/interviews/questions/next/'
+      )
+      return response.data
+    } catch (error) {
+      console.error('Error fetching next question:', error)
+      throw this.handleError(error)
     }
   }
 
   async submitResponse(
     sessionId: number,
-    response: UserResponse
+    questionId: number,
+    text: string
   ): Promise<InterviewFeedback> {
     try {
-      const apiResponse = await this.apiClient.post(
-        `/interviews/${sessionId}/submit`,
-        response
+      const response = await this.apiClient.post<InterviewFeedback>(
+        `/interviews/${sessionId}/submit/`,
+        { questionId, text }
       )
-      return apiResponse.data
+      return response.data
     } catch (error) {
       console.error('Error submitting response:', error)
-      throw error
+      throw this.handleError(error)
     }
   }
 
   async completeInterview(sessionId: number): Promise<void> {
     try {
-      await this.apiClient.post(`/interviews/${sessionId}/complete`)
+      await this.apiClient.post(`/interviews/${sessionId}/complete/`)
     } catch (error) {
       console.error('Error completing interview:', error)
-      throw error
+      throw this.handleError(error)
     }
   }
 
-  async getPastInterviews(page = 1, limit = 10): Promise<PastInterview[]> {
+  async getPastInterviews(
+    page = 1,
+    limit = 10
+  ): Promise<{ results: PastInterview[]; count: number }> {
     try {
-      const response = await this.apiClient.get('/interviews/history', {
+      console.log('Fetching past interviews...', { page, limit })
+      const response = await this.apiClient.get<{
+        results: PastInterview[]
+        count: number
+      }>('/interviews/history/', {
         params: { page, limit },
       })
+      console.log('Past interviews response:', response.data)
       return response.data
     } catch (error) {
       console.error('Error fetching past interviews:', error)
-      throw error
-    }
-  }
-
-  async transcribeAudio(audioFile: File): Promise<string> {
-    try {
-      const formData = new FormData()
-      formData.append('audio', audioFile)
-
-      const response = await this.apiClient.post(
-        '/interviews/transcribe',
-        formData,
-        {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-          },
-        }
-      )
-
-      return response.data.transcription
-    } catch (error) {
-      console.error('Error transcribing audio:', error)
-      throw error
+      throw this.handleError(error)
     }
   }
 }

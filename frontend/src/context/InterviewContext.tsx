@@ -1,9 +1,8 @@
-import React, { createContext, useContext, useState } from 'react'
+import React, { createContext, useContext, useState, useCallback } from 'react'
 import {
   InterviewSession,
-  UserResponse,
-  InterviewFeedback,
   InterviewQuestion,
+  InterviewFeedback,
   PastInterview,
 } from '../types/interview'
 import { interviewService } from '../services/interviewService'
@@ -11,14 +10,19 @@ import { interviewService } from '../services/interviewService'
 interface InterviewContextType {
   currentSession: InterviewSession | null
   currentQuestion: InterviewQuestion | null
-  currentFeedbacks: InterviewFeedback[]
   pastInterviews: PastInterview[]
+  totalInterviews: number
+  isLoading: boolean
+  error: string | null
 
   startInterview: () => Promise<void>
   getNextQuestion: () => Promise<void>
-  submitQuestionResponse: (response: UserResponse) => Promise<InterviewFeedback>
-  endInterview: (returnSession?: boolean) => Promise<InterviewSession | void>
+  skipQuestion: () => Promise<void>
+  submitResponse: (response: string) => Promise<InterviewFeedback>
+  completeInterview: () => Promise<void>
   fetchPastInterviews: (page?: number, limit?: number) => Promise<void>
+  clearError: () => void
+  resetInterview: () => void
 }
 
 const InterviewContext = createContext<InterviewContextType | undefined>(
@@ -33,92 +37,179 @@ export const InterviewProvider: React.FC<{ children: React.ReactNode }> = ({
   )
   const [currentQuestion, setCurrentQuestion] =
     useState<InterviewQuestion | null>(null)
-  const [currentFeedbacks, setCurrentFeedbacks] = useState<InterviewFeedback[]>(
-    []
-  )
   const [pastInterviews, setPastInterviews] = useState<PastInterview[]>([])
+  const [totalInterviews, setTotalInterviews] = useState(0)
+  const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
-  const startInterview = async () => {
-    try {
-      const session = await interviewService.startInterview()
-      setCurrentSession(session)
-      setCurrentFeedbacks([])
-      await getNextQuestion()
-    } catch (error) {
-      console.error('Failed to start interview:', error)
-      throw error
-    }
-  }
+  const clearError = useCallback(() => {
+    setError(null)
+  }, [])
 
-  const getNextQuestion = async () => {
-    try {
-      const question = await interviewService.getNextQuestion()
-      setCurrentQuestion(question)
-    } catch (error) {
-      console.error('Failed to get next question:', error)
-      throw error
-    }
-  }
+  const resetInterview = useCallback(() => {
+    setCurrentSession(null)
+    setCurrentQuestion(null)
+    setError(null)
+  }, [])
 
-  const submitQuestionResponse = async (
-    response: UserResponse
-  ): Promise<InterviewFeedback> => {
+  const handleError = useCallback((error: unknown) => {
+    const message =
+      error instanceof Error ? error.message : 'An unexpected error occurred'
+    setError(message)
+    throw error
+  }, [])
+
+  const fetchPastInterviews = useCallback(
+    async (page = 1, limit = 10) => {
+      setIsLoading(true)
+      setError(null)
+      try {
+        const { results, count } = await interviewService.getPastInterviews(
+          page,
+          limit
+        )
+        setPastInterviews(results)
+        setTotalInterviews(count)
+      } catch (error) {
+        handleError(error)
+      } finally {
+        setIsLoading(false)
+      }
+    },
+    [handleError]
+  )
+
+  const completeInterview = useCallback(async () => {
     if (!currentSession) {
       throw new Error('No active interview session')
     }
 
+    setIsLoading(true)
+    setError(null)
     try {
-      const feedback = await interviewService.submitResponse(
-        currentSession.id,
-        response
-      )
-      setCurrentFeedbacks((prev) => [...prev, feedback])
-      await getNextQuestion()
-      return feedback
-    } catch (error) {
-      console.error('Failed to submit response:', error)
-      throw error
-    }
-  }
+      await interviewService.completeInterview(currentSession.id)
+      setCurrentSession(null)
+      setCurrentQuestion(null)
 
-  const endInterview = async (): Promise<void> => {
-    if (currentSession) {
-      try {
-        await interviewService.completeInterview(currentSession.id)
-        setCurrentSession(null)
+      await fetchPastInterviews()
+    } catch (error) {
+      handleError(error)
+    } finally {
+      setIsLoading(false)
+    }
+  }, [currentSession, handleError, fetchPastInterviews])
+
+  const getNextQuestion = useCallback(async () => {
+    if (!currentSession) {
+      throw new Error('No active interview session')
+    }
+
+    setIsLoading(true)
+    setError(null)
+    try {
+      const question = await interviewService.getNextQuestion()
+      setCurrentQuestion(question)
+    } catch (error) {
+      if (
+        error instanceof Error &&
+        error.message.includes('No more questions available')
+      ) {
         setCurrentQuestion(null)
-        setCurrentFeedbacks([])
-      } catch (error) {
-        console.error('Failed to end interview:', error)
-        throw error
+        await completeInterview()
+      } else {
+        handleError(error)
       }
+    } finally {
+      setIsLoading(false)
     }
-  }
+  }, [currentSession, handleError, completeInterview])
 
-  const fetchPastInterviews = async (page = 1, limit = 10) => {
+  const startInterview = useCallback(async () => {
+    setIsLoading(true)
+    setError(null)
     try {
-      const interviews = await interviewService.getPastInterviews(page, limit)
-      setPastInterviews(interviews)
+      setCurrentSession(null)
+      setCurrentQuestion(null)
+
+      const session = await interviewService.startInterview()
+      setCurrentSession(session)
+
+      const question = await interviewService.getNextQuestion()
+      setCurrentQuestion(question)
     } catch (error) {
-      console.error('Failed to fetch past interviews:', error)
-      throw error
+      handleError(error)
+    } finally {
+      setIsLoading(false)
     }
+  }, [handleError])
+
+  const skipQuestion = useCallback(async () => {
+    if (!currentSession) {
+      throw new Error('No active interview session')
+    }
+
+    setIsLoading(true)
+    try {
+      const nextQuestion = await interviewService.getNextQuestion()
+      setCurrentQuestion(nextQuestion)
+    } catch (error) {
+      if (
+        error instanceof Error &&
+        error.message.includes('No more questions available')
+      ) {
+        await completeInterview()
+      } else {
+        handleError(error)
+      }
+    } finally {
+      setIsLoading(false)
+    }
+  }, [currentSession, handleError, completeInterview])
+
+  const submitResponse = useCallback(
+    async (response: string): Promise<InterviewFeedback> => {
+      if (!currentSession || !currentQuestion) {
+        throw new Error('No active interview session or question')
+      }
+
+      setIsLoading(true)
+      setError(null)
+      try {
+        const feedback = await interviewService.submitResponse(
+          currentSession.id,
+          currentQuestion.id,
+          response
+        )
+        return feedback
+      } catch (error) {
+        handleError(error)
+        throw error
+      } finally {
+        setIsLoading(false)
+      }
+    },
+    [currentSession, currentQuestion, handleError]
+  )
+
+  const value = {
+    currentSession,
+    currentQuestion,
+    pastInterviews,
+    totalInterviews,
+    isLoading,
+    error,
+    startInterview,
+    getNextQuestion,
+    skipQuestion,
+    submitResponse,
+    completeInterview,
+    fetchPastInterviews,
+    clearError,
+    resetInterview,
   }
 
   return (
-    <InterviewContext.Provider
-      value={{
-        currentSession,
-        currentQuestion,
-        currentFeedbacks,
-        pastInterviews,
-        startInterview,
-        getNextQuestion,
-        submitQuestionResponse,
-        endInterview,
-        fetchPastInterviews,
-      }}
-    >
+    <InterviewContext.Provider value={value}>
       {children}
     </InterviewContext.Provider>
   )
@@ -131,3 +222,5 @@ export const useInterview = () => {
   }
   return context
 }
+
+export default InterviewProvider
