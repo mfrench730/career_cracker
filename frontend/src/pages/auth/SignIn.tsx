@@ -40,8 +40,8 @@ const SignIn: React.FC = () => {
       }
 
       const data = await response.json()
-      localStorage.setItem('token', data.token)
-      login()
+      console.log('Logging in with username:', username);
+      login({ name: username }, data.token)
       navigate('/dashboard')
     } catch (err) {
       setError('An error occurred. Please try again.')

@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { useAuth } from '../../../context/AuthContext'
 import styles from '@/styles/header.module.css'
+import { CircleUserRound } from "lucide-react";
 
 interface HeaderProps {
   isOpen: boolean
@@ -91,9 +92,9 @@ export default function Header({ isOpen }: HeaderProps) {
           className={styles.profile}
           onClick={() => setIsDropdownOpen(!isDropdownOpen)}
         >
-          <img src="/images/default-profile.png" alt="Profile" />
+          <CircleUserRound size={32} strokeWidth={2} />
           <div className={styles.profileInfo}>
-            <span className={styles.name}>User Name</span>
+            <span className={styles.name}>Username</span>
             <span className={styles.role}>Developer</span>
           </div>
         </div>

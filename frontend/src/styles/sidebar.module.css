@@ -270,6 +270,7 @@
   align-items: center;
   width: 150px;
   min-width: 150px;
+  color:#fff;
 }
 
 .sidebar li.profile .name_job {
