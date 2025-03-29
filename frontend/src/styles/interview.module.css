@@ -5,7 +5,7 @@
   --text-secondary: #5f6368;
   --background-light: #f8f9fa;
   --border-color: #dadce0;
-}
+} 
 
 .interviewContainer {
   min-height: calc(100vh - 70px);
@@ -78,7 +78,7 @@
   gap: 1.5rem;
   width: 100%;
   justify-content: center;
-}
+} 
 
 .headerButton:active {
   transform: translateY(1px);
