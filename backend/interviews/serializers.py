@@ -5,7 +5,7 @@ from .models import Interview, CSQuestion, InterviewAnswer
 class CSQuestionSerializer(serializers.ModelSerializer):
     class Meta:
         model = CSQuestion
-        fields = ['id', 'question_text', 'category', 'difficulty']
+        fields = ['id', 'question_text', 'job_title', 'category', 'difficulty']
 
 class InterviewAnswerSerializer(serializers.ModelSerializer):
     question_text = serializers.CharField(source='question.question_text')
