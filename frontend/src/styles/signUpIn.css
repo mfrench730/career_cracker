@@ -1,0 +1,161 @@
+/* General container for centering */
+.container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 12px;
+    background-color: #f9f9f9;
+  }
+  
+  /* Card-like container for forms */
+  .card {
+    width: 100%;
+    max-width: 400px;
+    padding: 20px;
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Title styling */
+  .title {
+    font-size: 24px;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 16px;
+    color: #333;
+  }
+  
+  /* Error message styling */
+  .error-message {
+    color: #e53e3e;
+    text-align: center;
+    font-size: 14px;
+    margin-bottom: 8px;
+  }
+  
+  /* Form general styling */
+  .form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  
+  /* Form groups for inputs */
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  
+  /* Label styling */
+  .label {
+    font-size: 14px;
+    font-weight: 500;
+    color: #4a4a4a;
+  }
+  
+  /* Input and Select styling */
+  input, select {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+    transition: border-color 0.2s ease-in-out;
+  }
+  
+  input:focus, select:focus {
+    border-color: #6b46c1;
+    outline: none;
+  }
+  
+  /* Styling for dropdown selects */
+  .select-container {
+    position: relative;
+    width: 100%;
+  }
+  
+  .select {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+    background-color: #fff;
+    cursor: pointer;
+  }
+  
+  .select:hover {
+    border-color: #6b46c1;
+  }
+  
+  .select:focus {
+    border-color: #6b46c1;
+    outline: none;
+  }
+  
+  /* Dropdown options */
+  .select option {
+    padding: 8px;
+    font-size: 14px;
+    background-color: #fff;
+    color: #333;
+  }
+  
+  .select option:hover {
+    background-color: #f1f1f1;
+  }
+  
+  /* Checkbox and associated label */
+  .checkbox-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  
+  .checkbox-group label {
+    font-size: 14px;
+    color: #4a4a4a;
+  }
+  
+  /* Submit button styling */
+  .submit-button {
+    width: 100%;
+    padding: 10px;
+    background-color: #6b46c1;
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s ease-in-out;
+  }
+  
+  .submit-button:hover {
+    background-color: #5b3ca5;
+  }
+  
+  .submit-button:disabled {
+    background-color: #a0aec0;
+    cursor: not-allowed;
+  }
+  
+  /* Footer text styling */
+  .footer-text {
+    text-align: center;
+    font-size: 14px;
+    color: #4a4a4a;
+  }
+  
+  .footer-text a {
+    color: #6b46c1;
+    text-decoration: none;
+  }
+  
+  .footer-text a:hover {
+    text-decoration: underline;
+  }
+  
