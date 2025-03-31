@@ -10,10 +10,7 @@ class UserProfile(models.Model):
     preferred_interview_type = models.JSONField()
     preferred_language = models.CharField(max_length=255)
     resume_url = models.URLField(null=True, blank=True)
+    target_job_title = models.CharField(max_length=255, null=True)
     
     def __str__(self):
         return self.full_name
-
-####################################################
-
-# Create your models here.

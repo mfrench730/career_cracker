@@ -8,8 +8,11 @@ import random
 import openai
 from django.conf import settings
 from .models import Interview, CSQuestion, InterviewAnswer
-from .serializers import InterviewSerializer
+from .serializers import InterviewSerializer, CSQuestionSerializer
 from django.core.paginator import Paginator
+from jobs.utils.OnetWebService import OnetWebService
+from .utils import createCSQuestion
+import os
 
 logger = logging.getLogger(__name__)
 
@@ -46,19 +49,39 @@ class PastInterviewListView(APIView):
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
 
+
 class StartInterview(APIView):
     permission_classes = [IsAuthenticated]
     
     def post(self, request):
         try:
-            questions = list(CSQuestion.objects.all())
+            user = request.user
+            job_title = request.data.get('job_title', None)
+
+            if job_title is None:
+                user_profile = user.userprofile
+                job_title = user_profile.target_job_title
+
+            if job_title is None:
+                return Response({"error": "Job title required for interview creation"}, status=status.HTTP_400_BAD_REQUEST)
+
+            questions = list(CSQuestion.objects.filter(job_title__iexact=job_title))
+
+            if len(questions) < 5:
+                for _ in range(5):
+                    if not createCSQuestion(job_title=job_title):
+                      return Response({"error": "Failed to create new questions"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+                questions = list(CSQuestion.objects.filter(job_title__iexact=job_title))
+
             if len(questions) < 5:
                 return Response({"error": "Not enough questions available"}, status=400)
-            
+
             selected_questions = random.sample(questions, 5)
             
             interview = Interview.objects.create(
                 user=request.user,
+                job_title=job_title,
                 status="IN_PROGRESS"
             )
             interview.questions.set(selected_questions)
