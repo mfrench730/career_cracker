@@ -4,9 +4,9 @@ import type React from 'react'
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { Button } from '../../components/ui/button'
-import { Input } from '../../components/ui/input'
 import { Checkbox } from '../../components/ui/checkbox'
 import { useAuth } from '../../context/AuthContext'
+import '../../styles/signUpIn.css';
 
 const SignIn: React.FC = () => {
   const [username, setUsername] = useState('')
@@ -51,71 +51,32 @@ const SignIn: React.FC = () => {
   }
 
   return (
-    <div className="flex items-center justify-center min-h-screen">
-      <div className="w-full max-w-md p-8 space-y-6 bg-white rounded-lg shadow-md">
-        <h1 className="text-2xl font-bold text-center">Sign In</h1>
-        {error && <p className="text-red-500 text-center">{error}</p>}
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label
-              htmlFor="username"
-              className="block text-sm font-medium text-gray-700"
-            >
-              Username
-            </label>
-            <Input
-              type="text"
-              id="username"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              required
-            />
+    <div className="container">
+      <div className="card">
+        <h1 className="title">Sign In</h1>
+        {error && <p className="error-message">{error}</p>}
+        <form onSubmit={handleSubmit} className="form">
+          <div className="form-group">
+            <label htmlFor="username" className="label">Username</label>
+            <input type="text" id="username" value={username} onChange={(e) => setUsername(e.target.value)} required />
           </div>
-          <div>
-            <label
-              htmlFor="password"
-              className="block text-sm font-medium text-gray-700"
-            >
-              Password
-            </label>
-            <Input
-              type="password"
-              id="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
+          <div className="form-group">
+            <label htmlFor="password" className="label">Password</label>
+            <input type="password" id="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
           </div>
-          <div className="flex items-center justify-between">
-            <div className="flex items-center">
-              <Checkbox
-                id="remember-me"
-                checked={rememberMe}
-                onCheckedChange={(checked) => setRememberMe(checked as boolean)}
-              />
-              <label
-                htmlFor="remember-me"
-                className="ml-2 text-sm text-gray-600"
-              >
-                Remember me
-              </label>
+          <div className="form-group row">
+            <div className="checkbox-group">
+              <Checkbox id="remember-me" checked={rememberMe} onCheckedChange={(checked) => setRememberMe(checked as boolean)} />
+              <label htmlFor="remember-me" className="checkbox-label">Remember me</label>
             </div>
-            <Link
-              to="/forgot-password"
-              className="text-sm text-blue-600 hover:underline"
-            >
-              Forgot Password?
-            </Link>
+            <Link to="/forgot-password" className="link">Forgot Password?</Link>
           </div>
-          <Button type="submit" className="w-full" disabled={loading}>
+          <Button type="submit" className="submit-button" disabled={loading}>
             {loading ? 'Signing In...' : 'Sign In'}
           </Button>
         </form>
-        <p className="text-center text-sm text-gray-600">
-          Don't have an account?{' '}
-          <Link to="/signup" className="text-blue-600 hover:underline">
-            Sign Up
-          </Link>
+        <p className="footer-text">
+          Don't have an account? <Link to="/signup" className="link">Sign Up</Link>
         </p>
       </div>
     </div>
