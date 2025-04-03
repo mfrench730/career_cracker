@@ -125,4 +125,4 @@ npm install
 npm run dev
 ```
 
-This starts the frontend at `http://localhost:5173`.
+This starts the frontend at `http://localhost:3000`.
