@@ -54,9 +54,9 @@ This command will:
 
 - Build the **backend** (Django)
 - Build the **frontend** (React)
-- Start the database (if applicable)
+- Start the **database**
 
-Once done, the backend will be available at `http://localhost:8000` and the frontend at `http://localhost:5173`.
+Once done, the backend will be available at `http://localhost:8000` and the frontend at `http://localhost:3000`.
 
 ### 3. Stop the Containers
 
