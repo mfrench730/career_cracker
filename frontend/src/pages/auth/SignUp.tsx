@@ -3,16 +3,6 @@
 import type React from 'react'
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { Button } from '../../components/ui/button'
-import { Input } from '../../components/ui/input'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '../../components/ui/select.tsx'
-import { Checkbox } from '../../components/ui/checkbox'
 import { useAuth } from '../../context/AuthContext'
 
 const SignUp: React.FC = () => {
@@ -39,7 +29,8 @@ const SignUp: React.FC = () => {
     setFormData((prev) => ({ ...prev, [name]: value }))
   }
 
-  const handleSelectChange = (name: string, value: string) => {
+  const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const { name, value } = e.target
     setFormData((prev) => ({ ...prev, [name]: value }))
   }
 
@@ -114,239 +105,118 @@ const SignUp: React.FC = () => {
   }
 
   return (
-    <div className="flex items-center justify-center min-h-screen py-12">
-      <div className="w-full max-w-md p-8 space-y-6 bg-white rounded-lg shadow-md">
-        <h1 className="text-2xl font-bold text-center">Sign Up</h1>
-        {error && <p className="text-red-500 text-center">{error}</p>}
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label
-              htmlFor="fullName"
-              className="block text-sm font-medium text-gray-700"
-            >
-              Full Name
-            </label>
-            <Input
-              type="text"
-              id="fullName"
-              name="fullName"
-              value={formData.fullName}
-              onChange={handleChange}
-              required
-            />
+    <div className="container">
+      <div className="card">
+        <h1 className="title">Sign Up</h1>
+        {error && <p className="error-message">{error}</p>}
+        <form onSubmit={handleSubmit} className="form">
+          {/* Existing Fields */}
+          <div className="form-group">
+            <label htmlFor="fullName" className="label">Full Name</label>
+            <input type="text" id="fullName" name="fullName" value={formData.fullName} onChange={handleChange} required />
           </div>
-          <div>
-            <label
-              htmlFor="username"
-              className="block text-sm font-medium text-gray-700"
-            >
-              User Name
-            </label>
-            <Input
-              type="text"
-              id="username"
-              name="username"
-              value={formData.username}
-              onChange={handleChange}
-              required
-            />
+
+          <div className="form-group">
+            <label htmlFor="username" className="label">User Name</label>
+            <input type="text" id="username" name="username" value={formData.username} onChange={handleChange} required />
           </div>
-          <div>
-            <label
-              htmlFor="email"
-              className="block text-sm font-medium text-gray-700"
-            >
-              Email
-            </label>
-            <Input
-              type="email"
-              id="email"
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
-              required
-            />
+
+          <div className="form-group">
+            <label htmlFor="email" className="label">Email</label>
+            <input type="email" id="email" name="email" value={formData.email} onChange={handleChange} required />
           </div>
-          <div>
-            <label
-              htmlFor="password"
-              className="block text-sm font-medium text-gray-700"
-            >
-              Password
-            </label>
-            <Input
-              type="password"
-              id="password"
-              name="password"
-              value={formData.password}
-              onChange={handleChange}
-              required
-              minLength={8}
-            />
+
+          <div className="form-group">
+            <label htmlFor="password" className="label">Password</label>
+            <input type="password" id="password" name="password" value={formData.password} onChange={handleChange} required minLength={8} />
           </div>
-          <div>
-            <label
-              htmlFor="confirmPassword"
-              className="block text-sm font-medium text-gray-700"
-            >
-              Confirm Password
-            </label>
-            <Input
-              type="password"
-              id="confirmPassword"
-              name="confirmPassword"
-              value={formData.confirmPassword}
-              onChange={handleChange}
-              required
-            />
+
+          <div className="form-group">
+            <label htmlFor="confirmPassword" className="label">Confirm Password</label>
+            <input type="password" id="confirmPassword" name="confirmPassword" value={formData.confirmPassword} onChange={handleChange} required />
           </div>
-          <div>
-            <label
-              htmlFor="major"
-              className="block text-sm font-medium text-gray-700"
-            >
-              Major
-            </label>
-            <Select
-              onValueChange={(value) => handleSelectChange('major', value)}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Select Major" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="Computer Science">
-                  Computer Science
-                </SelectItem>
-                <SelectItem value="Mechanical Engineering">
-                  Mechanical Engineering
-                </SelectItem>
-                <SelectItem value="Electrical Engineering">
-                  Electrical Engineering
-                </SelectItem>
-                <SelectItem value="Business">Business</SelectItem>
-              </SelectContent>
-            </Select>
+
+          <div className="form-group">
+            <label className="label">Major</label>
+            <select name="major" className="select" onChange={handleSelectChange} required>
+              <option value="">Select Major</option>
+              <option value="Computer Science">Computer Science</option>
+              <option value="Mechanical Engineering">Mechanical Engineering</option>
+              <option value="Electrical Engineering">Electrical Engineering</option>
+              <option value="Business">Business</option>
+            </select>
           </div>
-          <div>
-            <label
-              htmlFor="educationLevel"
-              className="block text-sm font-medium text-gray-700"
-            >
-              Current Education Level
-            </label>
-            <Select
-              onValueChange={(value) =>
-                handleSelectChange('educationLevel', value)
-              }
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Select Education Level" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="High School">High School</SelectItem>
-                <SelectItem value="Undergraduate">Undergraduate</SelectItem>
-                <SelectItem value="Graduate">Graduate</SelectItem>
-                <SelectItem value="PhD">PhD</SelectItem>
-                <SelectItem value="Other">Other</SelectItem>
-              </SelectContent>
-            </Select>
+
+          <div className="form-group">
+            <label className="label">Current Education Level</label>
+            <select name="educationLevel" className="select" onChange={handleSelectChange} required>
+              <option value="">Select Education Level</option>
+              <option value="High School">High School</option>
+              <option value="Undergraduate">Undergraduate</option>
+              <option value="Graduate">Graduate</option>
+              <option value="PhD">PhD</option>
+              <option value="Other">Other</option>
+            </select>
           </div>
-          <div>
-            <label
-              htmlFor="experienceLevel"
-              className="block text-sm font-medium text-gray-700"
-            >
-              Experience Level
-            </label>
-            <Select
-              onValueChange={(value) =>
-                handleSelectChange('experienceLevel', value)
-              }
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Select Experience Level" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="No Experience">No Experience</SelectItem>
-                <SelectItem value="Entry-Level">Entry-Level</SelectItem>
-                <SelectItem value="1-3 Years">1-3 Years</SelectItem>
-                <SelectItem value="3+ Years">3+ Years</SelectItem>
-              </SelectContent>
-            </Select>
+
+          <div className="form-group">
+            <label className="label">Experience Level</label>
+            <select name="experienceLevel" className="select" onChange={handleSelectChange} required>
+              <option value="">Select Experience Level</option>
+              <option value="No Experience">No Experience</option>
+              <option value="Entry-Level">Entry-Level</option>
+              <option value="1-3 Years">1-3 Years</option>
+              <option value="3+ Years">3+ Years</option>
+            </select>
           </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700">
-              Preferred Interview Type
-            </label>
-            <div className="space-y-2">
-              {['Behavioral', 'Technical', 'System Design', 'Case Study'].map(
-                (type) => (
-                  <div key={type} className="flex items-center">
-                    <Checkbox
-                      id={`interview-${type}`}
-                      checked={formData.preferredInterviewTypes.includes(type)}
-                      onCheckedChange={() => handleCheckboxChange(type)}
-                    />
-                    <label
-                      htmlFor={`interview-${type}`}
-                      className="ml-2 text-sm text-gray-600"
-                    >
-                      {type}
-                    </label>
-                  </div>
-                )
-              )}
-            </div>
+
+          {/* Preferred Interview Type */}
+          <div className="form-group">
+                      <label className="label">Preferred Interview Type</label>
+                      <div className="checkbox-group">
+                        {['Behavioral', 'Technical', 'System Design', 'Case Study'].map((type) => (
+                          <div key={type} className="checkbox-item">
+                            <input
+                              type="checkbox"
+                              id={`interview-${type}`}
+                              checked={formData.preferredInterviewTypes.includes(type)}
+                              onChange={() => handleCheckboxChange(type)}
+                            />
+                            <label htmlFor={`interview-${type}`} className="checkbox-label">
+                              {type}
+                            </label>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+          {/* Preferred Programming Language */}
+          <div className="form-group">
+            <label className="label">Preferred Programming Language</label>
+            <select name="preferredLanguage" className="select" onChange={handleSelectChange} required>
+              <option value="">Select Language</option>
+              <option value="Python">Python</option>
+              <option value="Java">Java</option>
+              <option value="C++">C++</option>
+              <option value="JavaScript">JavaScript</option>
+            </select>
           </div>
-          <div>
-            <label
-              htmlFor="preferredLanguage"
-              className="block text-sm font-medium text-gray-700"
-            >
-              Preferred Programming Language
-            </label>
-            <Select
-              onValueChange={(value) =>
-                handleSelectChange('preferredLanguage', value)
-              }
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Select Language (Optional)" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="Python">Python</SelectItem>
-                <SelectItem value="Java">Java</SelectItem>
-                <SelectItem value="C++">C++</SelectItem>
-                <SelectItem value="JavaScript">JavaScript</SelectItem>
-              </SelectContent>
-            </Select>
+
+          {/* Resume Upload */}
+          <div className="form-group">
+            <label htmlFor="resume" className="label">Upload Resume (Optional)</label>
+            <input type="file" id="resume" name="resume" onChange={handleFileChange} accept=".pdf,.docx" />
+            <p className="small-text">Max file size: 5MB</p>
           </div>
-          <div>
-            <label
-              htmlFor="resume"
-              className="block text-sm font-medium text-gray-700"
-            >
-              Upload Resume (Optional)
-            </label>
-            <Input
-              type="file"
-              id="resume"
-              name="resume"
-              onChange={handleFileChange}
-              accept=".pdf,.docx"
-            />
-            <p className="mt-1 text-xs text-gray-500">Max file size: 5MB</p>
-          </div>
-          <Button type="submit" className="w-full" disabled={loading}>
+
+          <button type="submit" className="submit-button" disabled={loading}>
             {loading ? 'Signing Up...' : 'Sign Up'}
-          </Button>
+          </button>
         </form>
-        <p className="text-center text-sm text-gray-600">
+
+        <p className="footer-text">
           Already have an account?{' '}
-          <Link to="/signin" className="text-blue-600 hover:underline">
-            {' '}
-            Sign In
-          </Link>
+          <Link to="/signin">Sign In</Link>
         </p>
       </div>
     </div>

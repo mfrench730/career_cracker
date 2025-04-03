@@ -9,9 +9,11 @@ class CSQuestion(models.Model):
         ('OOP', 'Object-Oriented Programming'),
         ('DB', 'Databases'),
         ('OS', 'Operating Systems'),
+        ('NUL', 'None')
     ]
     
     question_text = models.TextField()
+    job_title = models.CharField(max_length=255, null=True)
     category = models.CharField(max_length=3, choices=CATEGORY_CHOICES)
     difficulty = models.PositiveSmallIntegerField(default=1)  # 1-5 scale
     created_at = models.DateTimeField(auto_now_add=True)
@@ -26,6 +28,7 @@ class Interview(models.Model):
     ]
 
     user = models.ForeignKey(User, on_delete=models.CASCADE)
+    job_title = models.CharField(max_length=255, null=True)
     interview_number = models.PositiveIntegerField(null=True)
     questions = models.ManyToManyField(CSQuestion)
     start_time = models.DateTimeField(auto_now_add=True)
