@@ -1,6 +1,7 @@
 import { Link, useLocation } from 'react-router-dom'
 import { useAuth } from '../../../context/AuthContext'
 import styles from '@/styles/sidebar.module.css'
+import { CircleUserRound } from "lucide-react";
 
 interface SidebarProps {
   isOpen: boolean
@@ -15,7 +16,7 @@ const NAVIGATION_ITEMS = [
   },
   {
     path: '/interview',
-    icon: 'bx-code-alt',
+    icon: 'bx-chat',
     label: 'Interview Practice',
   },
   {
@@ -67,9 +68,9 @@ export default function Sidebar({ isOpen, onToggle }: SidebarProps) {
           {isOpen ? (
             <>
               <div className={styles['profile-details']}>
-                <img src="/images/default-profile.png" alt="profile" />
+                <CircleUserRound size={32} strokeWidth={2} />
                 <div className={styles.name_job}>
-                  <div className={styles.name}>User Name</div>
+                  <div className={styles.name}>Username</div>
                   <div className={styles.job}>Developer</div>
                 </div>
               </div>
