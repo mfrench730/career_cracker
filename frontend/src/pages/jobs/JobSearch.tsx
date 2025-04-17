@@ -42,10 +42,10 @@ const JobSearch: React.FC = () => {
       {result && (
         <div className={styles.resultBox}>
           <h2>Description</h2>
-          <p>{result.description}</p>
+          <p className={styles.descriptionList}>{result.description}</p>
 
           <h2>Tasks</h2>
-          <ul>
+          <ul className={styles.taskList}>
             {result.tasks.map((task, index) => (
               <li key={index}>{task}</li>
             ))}

@@ -1,18 +1,19 @@
 :root {
   /* Enhanced Color Palette with More Depth */
-  --color-primary: #1A237E;
+  --color-primary: #1a237e;
   --color-secondary: #283593;
-  --color-accent: #3F51B5;
+  --color-accent: #3f51b5;
   --color-text-primary: #212121;
   --color-text-secondary: #424242;
-  --color-background: #F5F7FA;
-  --color-white: #FFFFFF;
-  --color-border: #E1E4E8;
-  --color-highlight: #E3F2FD;
-  
+  --color-background: #f5f7fa;
+  --color-white: #ffffff;
+  --color-border: #e1e4e8;
+  --color-highlight: #e3f2fd;
+
   /* Refined Typography */
-  --font-primary: 'Inter', 'Roboto', 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-  
+  --font-primary: 'Inter', 'Roboto', 'Segoe UI', system-ui, -apple-system,
+    BlinkMacSystemFont, sans-serif;
+
   /* Enhanced Shadows and Effects */
   --shadow-default: 0 4px 10px rgba(0, 0, 0, 0.08);
   --shadow-hover: 0 8px 20px rgba(0, 0, 0, 0.12);
@@ -70,7 +71,11 @@ body {
   left: 0;
   width: 100%;
   height: 4px;
-  background: linear-gradient(to right, var(--color-primary), var(--color-accent));
+  background: linear-gradient(
+    to right,
+    var(--color-primary),
+    var(--color-accent)
+  );
 }
 
 .searchBoxFrame:hover {
@@ -88,20 +93,9 @@ body {
   border-radius: 22px;
   padding: 2.5rem;
   box-shadow: var(--shadow-default);
-  border: 1px solid var(--color-border);
+  border: 1px solid var(--color-primary);
   transition: var(--transition-smooth);
   position: relative;
-}
-
-.header::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  height: 3px;
-  background: linear-gradient(to right, var(--color-accent), var(--color-secondary));
-  opacity: 0.7;
 }
 
 .header:hover {
@@ -134,7 +128,12 @@ body {
   left: -100%;
   width: 100%;
   height: 100%;
-  background: linear-gradient(120deg, transparent, rgba(255,255,255,0.3), transparent);
+  background: linear-gradient(
+    120deg,
+    transparent,
+    rgba(255, 255, 255, 0.3),
+    transparent
+  );
   transition: var(--transition-smooth);
 }
 
@@ -167,7 +166,6 @@ body {
   border-radius: 12px;
   font-size: 1rem;
   transition: var(--transition-smooth);
-  background-color: var(--color-highlight);
 }
 
 .searchInput:focus {
@@ -199,7 +197,12 @@ body {
   left: -100%;
   width: 100%;
   height: 100%;
-  background: linear-gradient(120deg, transparent, rgba(255,255,255,0.3), transparent);
+  background: linear-gradient(
+    120deg,
+    transparent,
+    rgba(255, 255, 255, 0.3),
+    transparent
+  );
   transition: var(--transition-smooth);
 }
 
@@ -220,19 +223,9 @@ body {
   padding: 2.5rem;
   margin-top: 2.5rem;
   box-shadow: var(--shadow-default);
-  border: 1px solid var(--color-border);
+  border: 1px solid var(--color-primary);
   transition: var(--transition-smooth);
   position: relative;
-}
-
-.resultBox::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 4px;
-  background: linear-gradient(to right, var(--color-accent), var(--color-secondary));
 }
 
 .resultBox:hover {
@@ -240,6 +233,14 @@ body {
   transform: translateY(-4px);
 }
 
+.taskList {
+  padding-left: 38px;
+}
+
+.descriptionList {
+  padding-left: 18px;
+  padding-bottom: 25px;
+}
 /* Responsive Design with Improved Mobile Experience */
 @media screen and (max-width: 768px) {
   .jobContainer {
@@ -258,7 +259,8 @@ body {
     gap: 1.5rem;
   }
 
-  .searchInput, .searchButton {
+  .searchInput,
+  .searchButton {
     width: 100%;
     max-width: 350px;
   }
@@ -266,13 +268,13 @@ body {
 
 /* Enhanced Subtle Animations */
 @keyframes fadeIn {
-  from { 
-    opacity: 0; 
-    transform: translateY(30px); 
+  from {
+    opacity: 0;
+    transform: translateY(30px);
   }
-  to { 
-    opacity: 1; 
-    transform: translateY(0); 
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
@@ -287,8 +289,6 @@ body {
   outline: 2px solid var(--color-accent);
   outline-offset: 3px;
 }
-
-
 
 .displayBox {
   background-color: var(--color-white);
