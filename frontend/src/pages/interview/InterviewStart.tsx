@@ -1,17 +1,12 @@
 import React, { useState, useCallback, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  CardFooter,
-} from '@/components/ui/card'
+import { Card, CardContent, CardHeader, CardFooter } from '@/components/ui/card'
 import { useInterview } from '@/context/InterviewContext'
 import { formatDistanceToNow } from 'date-fns'
 import styles from '@/styles/interview.module.css'
 import InterviewReviewModal from '@/components/interview/InterviewReviewModal'
 import InterviewModal from '@/components/interview/ActiveInterviewModal'
+import InterviewFeedbackModal from '@/components/interview/InterviewFeedbackModal'
 import { Loader2 } from 'lucide-react'
 import { PastInterview } from '@/types/interview'
 
@@ -22,6 +17,8 @@ const InterviewStart: React.FC = () => {
     fetchPastInterviews,
     isLoading,
     error,
+    submitFeedback,
+    totalInterviews,
   } = useInterview()
 
   const [selectedInterviewId, setSelectedInterviewId] = useState<number | null>(
@@ -29,17 +26,24 @@ const InterviewStart: React.FC = () => {
   )
   const [isNewInterviewOpen, setIsNewInterviewOpen] = useState(false)
   const [isStartingInterview, setIsStartingInterview] = useState(false)
+  const [isFeedbackModalOpen, setIsFeedbackModalOpen] = useState(false)
+  const [feedbackInterviewId, setFeedbackInterviewId] = useState<number | null>(
+    null
+  )
+
+  const [currentPage, setCurrentPage] = useState(1)
+  const limit = 12
 
   useEffect(() => {
     const loadInterviews = async () => {
       try {
-        await fetchPastInterviews()
+        await fetchPastInterviews(currentPage, limit)
       } catch (error) {
-        console.error('Failed to fetch interviews:', error)
+        throw error
       }
     }
     loadInterviews()
-  }, [fetchPastInterviews])
+  }, [fetchPastInterviews, currentPage])
 
   const handleReviewInterview = useCallback((interviewId: number) => {
     setSelectedInterviewId(interviewId)
@@ -63,14 +67,45 @@ const InterviewStart: React.FC = () => {
 
   const handleCloseNewInterview = useCallback(() => {
     setIsNewInterviewOpen(false)
-    fetchPastInterviews().catch(console.error)
-  }, [fetchPastInterviews])
+    fetchPastInterviews(currentPage, limit).catch(console.error)
+  }, [fetchPastInterviews, currentPage])
+
+  const handleOpenFeedbackModal = useCallback((interviewId: number) => {
+    setFeedbackInterviewId(interviewId)
+    setIsFeedbackModalOpen(true)
+  }, [])
+
+  const handleCloseFeedbackModal = useCallback(() => {
+    setIsFeedbackModalOpen(false)
+    setFeedbackInterviewId(null)
+  }, [])
+
+  const handleSubmitFeedback = useCallback(
+    async (feedback: { content: string; rating: number }) => {
+      if (!feedbackInterviewId) return
+
+      try {
+        await submitFeedback(
+          feedbackInterviewId,
+          feedback.content,
+          feedback.rating
+        )
+        setIsFeedbackModalOpen(false)
+        await fetchPastInterviews(currentPage, limit)
+      } catch (error) {
+        throw error
+      }
+    },
+    [feedbackInterviewId, submitFeedback, fetchPastInterviews, currentPage]
+  )
 
   const renderInterviewCard = (interview: PastInterview, index: number) => {
     if (!interview) return null
 
     const answers = Array.isArray(interview.answers) ? interview.answers : []
     const lastAnswer = answers.length > 0 ? answers[answers.length - 1] : null
+    const isCompleted = interview.status === 'COMPLETED'
+    const hasFeedback = !!interview.feedback
 
     return (
       <Card
@@ -78,13 +113,16 @@ const InterviewStart: React.FC = () => {
         className={styles.interviewCard}
         style={{ '--index': index } as React.CSSProperties}
       >
-        <CardHeader>
-          <div className="flex justify-between items-start">
-            <CardTitle className={`text-xl ${styles.cardTitle}`}>
-              Interview #{interview.id}
-            </CardTitle>
+        <CardHeader className="relative">
+          <div className="flex items-center justify-between w-full">
+            <div className="flex items-center gap-2">
+              <h3 className={`text-xl font-semibold ${styles.cardTitle}`}>
+                Interview #{interview.id}
+              </h3>
+            </div>
           </div>
         </CardHeader>
+
         <CardContent>
           <div className="space-y-4">
             <div>
@@ -106,6 +144,14 @@ const InterviewStart: React.FC = () => {
                     : 'In progress'}
                 </span>
               </div>
+              {interview.feedback && (
+                <div
+                  className={`flex justify-between text-sm text-muted-foreground ${styles.ratingInfo}`}
+                >
+                  <span className="font-semibold">Rating:</span>
+                  <span>{interview.feedback.rating}/5</span>
+                </div>
+              )}
             </div>
             {lastAnswer && (
               <div className="text-sm">
@@ -117,17 +163,29 @@ const InterviewStart: React.FC = () => {
             )}
           </div>
         </CardContent>
-        <CardFooter>
+
+        <CardFooter className="flex gap-3">
           <Button
-            className={`w-full ${styles.reviewButton}`}
+            className={`flex-1 ${styles.reviewButton}`}
             onClick={() => handleReviewInterview(interview.id)}
           >
             Review Interview
           </Button>
         </CardFooter>
+
+        {isCompleted && !hasFeedback && (
+          <button
+            className={styles.feedbackSmallButton}
+            onClick={() => handleOpenFeedbackModal(interview.id)}
+          >
+            Give Feedback
+          </button>
+        )}
       </Card>
     )
   }
+
+  const totalPages = Math.max(1, Math.ceil(totalInterviews / limit))
 
   return (
     <div className={`space-y-4 ${styles.interviewContainer}`}>
@@ -148,10 +206,7 @@ const InterviewStart: React.FC = () => {
           disabled={isStartingInterview}
         >
           {isStartingInterview ? (
-            <span className="flex items-center gap-2">
-              <Loader2 className="h-4 w-4 animate-spin" />
-              Starting...
-            </span>
+            <span className="flex items-center gap-2">Starting...</span>
           ) : (
             'Begin New Interview'
           )}
@@ -167,7 +222,6 @@ const InterviewStart: React.FC = () => {
       >
         {isLoading ? (
           <div className="col-span-full text-center py-8">
-            <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4" />
             <p>Loading interviews...</p>
           </div>
         ) : !Array.isArray(pastInterviews) || pastInterviews.length === 0 ? (
@@ -181,6 +235,24 @@ const InterviewStart: React.FC = () => {
         )}
       </div>
 
+      <div className={styles.paginationControls}>
+        <Button
+          className={styles.paginationButton}
+          disabled={currentPage === 1}
+          onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+        >
+          Previous
+        </Button>
+
+        <Button
+          className={styles.paginationButton}
+          disabled={totalPages <= 1 || currentPage >= totalPages}
+          onClick={() => setCurrentPage((prev) => prev + 1)}
+        >
+          Next
+        </Button>
+      </div>
+
       {selectedInterviewId !== null && (
         <InterviewReviewModal
           isOpen={true}
@@ -192,7 +264,21 @@ const InterviewStart: React.FC = () => {
       <InterviewModal
         isOpen={isNewInterviewOpen}
         onClose={handleCloseNewInterview}
+        onInterviewComplete={(interviewId) => {
+          setIsNewInterviewOpen(false)
+          setFeedbackInterviewId(interviewId)
+          setIsFeedbackModalOpen(true)
+        }}
       />
+
+      {feedbackInterviewId !== null && (
+        <InterviewFeedbackModal
+          isOpen={isFeedbackModalOpen}
+          onClose={handleCloseFeedbackModal}
+          interviewId={feedbackInterviewId}
+          onSubmit={handleSubmitFeedback}
+        />
+      )}
     </div>
   )
 }

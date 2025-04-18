@@ -4,6 +4,7 @@ import {
   InterviewFeedback,
   InterviewSession,
   PastInterview,
+  QuestionRating,
 } from '../types/interview'
 
 class InterviewService {
@@ -124,6 +125,68 @@ class InterviewService {
     } catch (error) {
       console.error('Error fetching past interviews:', error)
       throw this.handleError(error)
+    }
+  }
+
+  async rateQuestion(
+    questionId: number,
+    interviewId: number,
+    rating: string
+  ): Promise<QuestionRating> {
+    try {
+      const response = await this.apiClient.post<QuestionRating>(
+        '/interviews/question/rate/',
+        {
+          question_id: questionId,
+          interview_id: interviewId,
+          rating: rating,
+        }
+      )
+      return response.data
+    } catch (error) {
+      console.error('Error rating question:', error)
+      throw this.handleError(error)
+    }
+  }
+
+  async submitFeedback(
+    interviewId: number,
+    content: string,
+    rating: number
+  ): Promise<InterviewFeedback> {
+    try {
+      const response = await this.apiClient.post<InterviewFeedback>(
+        `/interviews/${interviewId}/feedback/`,
+        {
+          content,
+          rating,
+        }
+      )
+      return response.data
+    } catch (error) {
+      console.error('Error submitting feedback:', error)
+      throw this.handleError(error)
+    }
+  }
+
+  async getQuestionRating(
+    questionId: number,
+    interviewId: number
+  ): Promise<QuestionRating | null> {
+    try {
+      const response = await this.apiClient.get<QuestionRating | null>(
+        '/interviews/question/rating/',
+        {
+          params: {
+            question_id: questionId,
+            interview_id: interviewId,
+          },
+        }
+      )
+      return response.data
+    } catch (error) {
+      console.error('Error fetching question rating:', error)
+      return null
     }
   }
 }

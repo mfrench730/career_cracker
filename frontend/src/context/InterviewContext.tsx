@@ -4,6 +4,7 @@ import {
   InterviewQuestion,
   InterviewFeedback,
   PastInterview,
+  QuestionRating,
 } from '../types/interview'
 import { interviewService } from '../services/interviewService'
 
@@ -23,6 +24,20 @@ interface InterviewContextType {
   fetchPastInterviews: (page?: number, limit?: number) => Promise<void>
   clearError: () => void
   resetInterview: () => void
+  rateQuestion: (
+    questionId: number,
+    interviewId: number,
+    rating: string
+  ) => Promise<QuestionRating>
+  submitFeedback: (
+    interviewId: number,
+    content: string,
+    rating: number
+  ) => Promise<InterviewFeedback>
+  getQuestionRating?: (
+    questionId: number,
+    interviewId: number
+  ) => Promise<QuestionRating | null>
 }
 
 const InterviewContext = createContext<InterviewContextType | undefined>(
@@ -191,6 +206,74 @@ export const InterviewProvider: React.FC<{ children: React.ReactNode }> = ({
     [currentSession, currentQuestion, handleError]
   )
 
+  const rateQuestion = useCallback(
+    async (
+      questionId: number,
+      interviewId: number,
+      rating: string
+    ): Promise<QuestionRating> => {
+      setIsLoading(true)
+      setError(null)
+      try {
+        const result = await interviewService.rateQuestion(
+          questionId,
+          interviewId,
+          rating
+        )
+        return result
+      } catch (error) {
+        handleError(error)
+        throw error
+      } finally {
+        setIsLoading(false)
+      }
+    },
+    [handleError]
+  )
+
+  const submitFeedback = useCallback(
+    async (
+      interviewId: number,
+      content: string,
+      rating: number
+    ): Promise<InterviewFeedback> => {
+      setIsLoading(true)
+      setError(null)
+      try {
+        const result = await interviewService.submitFeedback(
+          interviewId,
+          content,
+          rating
+        )
+
+        await fetchPastInterviews()
+
+        return result
+      } catch (error) {
+        handleError(error)
+        throw error
+      } finally {
+        setIsLoading(false)
+      }
+    },
+    [handleError, fetchPastInterviews]
+  )
+
+  const getQuestionRating = useCallback(
+    async (
+      questionId: number,
+      interviewId: number
+    ): Promise<QuestionRating | null> => {
+      try {
+        return await interviewService.getQuestionRating(questionId, interviewId)
+      } catch (error) {
+        console.error('Error fetching question rating:', error)
+        return null
+      }
+    },
+    []
+  )
+
   const value = {
     currentSession,
     currentQuestion,
@@ -206,6 +289,9 @@ export const InterviewProvider: React.FC<{ children: React.ReactNode }> = ({
     fetchPastInterviews,
     clearError,
     resetInterview,
+    rateQuestion,
+    submitFeedback,
+    getQuestionRating,
   }
 
   return (

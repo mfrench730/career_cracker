@@ -7,7 +7,7 @@ import logging
 import random
 import openai
 from django.conf import settings
-from .models import Interview, CSQuestion, InterviewAnswer
+from .models import Interview, CSQuestion, InterviewAnswer, QuestionRating, InterviewFeedback
 from .serializers import InterviewSerializer, CSQuestionSerializer
 from django.core.paginator import Paginator
 from jobs.utils.OnetWebService import OnetWebService
@@ -22,7 +22,7 @@ class PastInterviewListView(APIView):
     def get(self, request):
         try:
             page = int(request.query_params.get('page', 1))
-            limit = int(request.query_params.get('limit', 10))
+            limit = int(request.query_params.get('limit', 12))
             
             interviews = Interview.objects.filter(
                 user=request.user,
@@ -216,3 +216,110 @@ class NextQuestionView(APIView):
                 {"error": "Failed to fetch next question"},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
+        
+class RateQuestion(APIView):
+    permission_classes = [IsAuthenticated]
+    
+    def post(self, request):
+        try:
+            question_id = request.data.get('question_id')
+            interview_id = request.data.get('interview_id')
+            rating = request.data.get('rating')
+            
+            if not question_id or not interview_id or not rating:
+                return Response({"error": "Missing required fields"}, status=status.HTTP_400_BAD_REQUEST)
+            
+            if rating not in ['LIKE', 'DISLIKE']:
+                return Response({"error": "Invalid rating value"}, status=status.HTTP_400_BAD_REQUEST)
+            
+            interview = Interview.objects.get(id=interview_id, user=request.user)
+            question = CSQuestion.objects.get(id=question_id)
+            
+            rating_obj, created = QuestionRating.objects.update_or_create(
+                user=request.user,
+                question=question,
+                interview=interview,
+                defaults={'rating': rating}
+            )
+            
+            return Response({
+                "id": rating_obj.id,
+                "rating": rating_obj.rating,
+                "created_at": rating_obj.created_at
+            }, status=status.HTTP_201_CREATED if created else status.HTTP_200_OK)
+            
+        except Interview.DoesNotExist:
+            return Response({"error": "Interview not found"}, status=status.HTTP_404_NOT_FOUND)
+        except CSQuestion.DoesNotExist:
+            return Response({"error": "Question not found"}, status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            logger.error(f"Error rating question: {str(e)}")
+            return Response({"error": "Failed to process rating"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+class SubmitInterviewFeedback(APIView):
+    permission_classes = [IsAuthenticated]
+    
+    def post(self, request, interview_id):
+        try:
+            content = request.data.get('content')
+            rating = request.data.get('rating', 0)
+            
+            if not content:
+                return Response({"error": "Feedback content is required"}, status=status.HTTP_400_BAD_REQUEST)
+            
+            interview = Interview.objects.get(id=interview_id, user=request.user)
+            
+            if interview.status != "COMPLETED":
+                return Response({"error": "Can only provide feedback for completed interviews"}, 
+                               status=status.HTTP_400_BAD_REQUEST)
+            
+            feedback, created = InterviewFeedback.objects.update_or_create(
+                interview=interview,
+                defaults={
+                    'content': content,
+                    'rating': rating
+                }
+            )
+            
+            return Response({
+                "id": feedback.id,
+                "content": feedback.content,
+                "rating": feedback.rating,
+                "created_at": feedback.created_at
+            }, status=status.HTTP_201_CREATED if created else status.HTTP_200_OK)
+            
+        except Interview.DoesNotExist:
+            return Response({"error": "Interview not found"}, status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            logger.error(f"Error submitting feedback: {str(e)}")
+            return Response({"error": "Failed to submit feedback"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
+class GetQuestionRating(APIView):
+    permission_classes = [IsAuthenticated]
+    
+    def get(self, request):
+        try:
+            question_id = request.query_params.get('question_id')
+            interview_id = request.query_params.get('interview_id')
+            
+            if not question_id or not interview_id:
+                return Response({"error": "Missing required parameters"}, status=status.HTTP_400_BAD_REQUEST)
+            
+            try:
+                rating = QuestionRating.objects.get(
+                    user=request.user,
+                    question_id=question_id,
+                    interview_id=interview_id
+                )
+                
+                return Response({
+                    "id": rating.id,
+                    "rating": rating.rating,
+                    "created_at": rating.created_at
+                })
+            except QuestionRating.DoesNotExist:
+                return Response({"rating": None}, status=status.HTTP_200_OK)
+                
+        except Exception as e:
+            logger.error(f"Error fetching question rating: {str(e)}")
+            return Response({"error": "Failed to fetch rating"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

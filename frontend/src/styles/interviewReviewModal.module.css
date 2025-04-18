@@ -84,12 +84,19 @@
   border-color: #6b46c1;
 }
 
+.cardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
 .cardTitle {
   font-size: 1.125rem;
   font-weight: 600;
   color: #374151;
-  margin-bottom: 1rem;
   padding-left: 0.5rem;
+  margin: 0;
 }
 
 .questionSection {
@@ -129,6 +136,49 @@
   margin-left: 1.75rem;
 }
 
+.likeIndicator,
+.dislikeIndicator {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  padding: 4px 10px;
+  border-radius: 9999px;
+}
+
+.likeIndicator {
+  background-color: #ecfdf5;
+  color: #047857;
+  border: 1px solid #a7f3d0;
+}
+
+.dislikeIndicator {
+  background-color: #fef2f2;
+  color: #b91c1c;
+  border: 1px solid #fecaca;
+}
+
+.ratingThumbIcon {
+  flex-shrink: 0;
+}
+
+.feedbackRating {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px dashed #e5e7eb;
+  margin-left: 1.75rem;
+}
+
+.feedbackRatingLabel {
+  font-size: 0.75rem;
+  color: #6b7280;
+  margin: 0;
+}
+
 .closeButton {
   position: absolute;
   top: 1rem;
@@ -153,6 +203,68 @@
 
 .closeButton:active {
   transform: scale(0.95);
+}
+
+.feedbackSection {
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px dashed #d1d5db;
+}
+
+.feedbackTitle {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 1rem;
+}
+
+.feedbackCard {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  padding: 1.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.feedbackRatingStars {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1rem;
+  gap: 0.75rem;
+}
+
+.ratingLabel {
+  font-weight: 500;
+  color: #4b5563;
+  margin: 0;
+}
+
+.starRating {
+  display: flex;
+  gap: 0.25rem;
+}
+
+.star {
+  font-size: 1.25rem;
+  color: #d1d5db;
+}
+
+.starActive {
+  color: #f59e0b;
+}
+
+.feedbackContent {
+  color: #4b5563;
+  line-height: 1.6;
+  margin-bottom: 1rem;
+  white-space: pre-wrap;
+}
+
+.feedbackDate {
+  color: #6b7280;
+  font-size: 0.75rem;
+  text-align: right;
+  margin: 0;
 }
 
 @keyframes fadeIn {
@@ -196,5 +308,11 @@
 
   .sectionContent {
     margin-left: 1.5rem;
+  }
+
+  .feedbackRatingStars {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
   }
 }
