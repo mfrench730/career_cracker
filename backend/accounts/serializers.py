@@ -13,12 +13,16 @@ class UserSignupSerializer(serializers.ModelSerializer):
     preferred_language = serializers.CharField(required=True)
     resume_url = serializers.URLField(required=False, allow_null=True)
     
+
+    target_job_title = serializers.CharField(required=False, allow_blank=True)
+
+
     password = serializers.CharField(write_only=True, min_length=8)
     email = serializers.EmailField(required=True)
 
     class Meta:
         model = User
-        fields = ["username", "full_name", "email", "password", "major", "education_level", "experience_level", "preferred_interview_type", "preferred_language", "resume_url"]
+        fields = ["username", "full_name", "email", "password", "major", "education_level", "experience_level", "preferred_interview_type", "preferred_language", "resume_url",  "target_job_title"]
 
     def validate_email(self, value):
         """Check if email is unique"""
@@ -38,6 +42,8 @@ class UserSignupSerializer(serializers.ModelSerializer):
                 "preferred_interview_type": validated_data.pop("preferred_interview_type"),
                 "preferred_language": validated_data.pop("preferred_language"),
                 "resume_url": validated_data.pop("resume_url", None),
+                "target_job_title": validated_data.pop("target_job_title", None)
+
             }
             
             user = User.objects.create_user(

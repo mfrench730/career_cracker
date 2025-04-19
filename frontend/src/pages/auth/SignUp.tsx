@@ -18,6 +18,7 @@ const SignUp: React.FC = () => {
     preferredInterviewTypes: [] as string[],
     preferredLanguage: '',
     resume: null as File | null,
+    targetJobTitle: '',
   })
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
@@ -76,6 +77,7 @@ const SignUp: React.FC = () => {
         formDataToSend.append('preferred_interview_type', type)
       })
       formDataToSend.append('preferred_language', formData.preferredLanguage)
+      formDataToSend.append('target_job_title', formData.targetJobTitle)
       if (formData.resume) {
         formDataToSend.append('resume', formData.resume)
       }
@@ -200,6 +202,19 @@ const SignUp: React.FC = () => {
               <option value="C++">C++</option>
               <option value="JavaScript">JavaScript</option>
             </select>
+          </div>
+          
+          {/* Job title input box*/}
+          <div className="form-group">
+            <label htmlFor="targetJobTitle" className="label">Target Job Title</label>
+            <input
+              type="text"
+              id="targetJobTitle"
+              name="targetJobTitle"
+              value={formData.targetJobTitle}
+              onChange={handleChange}
+              required
+            />
           </div>
 
           {/* Resume Upload */}

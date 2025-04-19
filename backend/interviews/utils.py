@@ -32,6 +32,8 @@ def createCSQuestion(job_title):
 
             Question: 
         """
+        logger.info(f"\n=== OpenAI Prompt Input ===\nJob Title: {job_title}\nDescription: {description}\nTasks: {tasks}")
+
 
         completion = client.chat.completions.create(
         model="gpt-3.5-turbo",
