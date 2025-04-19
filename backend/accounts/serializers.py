@@ -4,18 +4,18 @@ from .models import UserProfile
 
 
 class UserSignupSerializer(serializers.ModelSerializer):
-    username = serializers.CharField(required=True)  # Add this line
+    username = serializers.CharField(required=True)
     full_name = serializers.CharField(required=True)
+
     major = serializers.CharField(required=True)
     education_level = serializers.CharField(required=True)
     experience_level = serializers.CharField(required=True)
     preferred_interview_type = serializers.ListField(child=serializers.CharField(), required=True)
     preferred_language = serializers.CharField(required=True)
-    resume_url = serializers.URLField(required=False, allow_null=True)
     
+    resume_url = serializers.URLField(required=False, allow_null=True)
 
     target_job_title = serializers.CharField(required=False, allow_blank=True)
-
 
     password = serializers.CharField(write_only=True, min_length=8)
     email = serializers.EmailField(required=True)
