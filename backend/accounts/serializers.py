@@ -57,3 +57,30 @@ class UserSignupSerializer(serializers.ModelSerializer):
         if User.objects.filter(username=value).exists():
             raise serializers.ValidationError("Username is already taken.")
         return value
+
+class UserProfileSerializer(serializers.ModelSerializer):
+    email = serializers.EmailField(source='user.email', read_only=True)
+    username = serializers.CharField(source='user.username', read_only=True)
+    
+    class Meta:
+        model = UserProfile
+        fields = ['username', 'email', 'full_name', 'major', 'education_level', 
+                  'experience_level', 'preferred_interview_type', 'preferred_language', 
+                  'resume_url', 'target_job_title']
+        
+    def update(self, instance, validated_data):
+        """Handle preferred_interview_type field specially if needed"""
+        if 'preferred_interview_type' in validated_data:
+            interview_type = validated_data['preferred_interview_type']
+            if isinstance(interview_type, str):
+                try:
+                    import json
+                    validated_data['preferred_interview_type'] = json.loads(interview_type)
+                except json.JSONDecodeError:
+                    pass
+            
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+        
+        instance.save()
+        return instance
