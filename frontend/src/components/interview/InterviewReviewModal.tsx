@@ -1,6 +1,6 @@
 import React from 'react'
 import { format } from 'date-fns'
-import { X, MessageSquare, User, ThumbsUp } from 'lucide-react'
+import { X, MessageSquare, User, ThumbsUp, ThumbsDown } from 'lucide-react'
 import styles from '@/styles/interviewReviewModal.module.css'
 import { useInterview } from '@/context/InterviewContext'
 import { PastInterview } from '@/types/interview'
@@ -75,7 +75,36 @@ const InterviewReviewModal: React.FC<InterviewReviewModalProps> = ({
             <div className="space-y-6">
               {interviewData.answers.map((answer, index) => (
                 <div key={index} className={styles.questionCard}>
-                  <h3 className={styles.cardTitle}>Question {index + 1}</h3>
+                  <div className={styles.cardHeader}>
+                    <h3 className={styles.cardTitle}>Question {index + 1}</h3>
+                    {answer.rating && (
+                      <div
+                        className={
+                          answer.rating.rating === 'LIKE'
+                            ? styles.likeIndicator
+                            : styles.dislikeIndicator
+                        }
+                      >
+                        {answer.rating.rating === 'LIKE' ? (
+                          <>
+                            <ThumbsUp
+                              size={16}
+                              className={styles.ratingThumbIcon}
+                            />{' '}
+                            <span>Helpful</span>
+                          </>
+                        ) : (
+                          <>
+                            <ThumbsDown
+                              size={16}
+                              className={styles.ratingThumbIcon}
+                            />{' '}
+                            <span>Not Helpful</span>
+                          </>
+                        )}
+                      </div>
+                    )}
+                  </div>
 
                   <div className={styles.questionSection}>
                     <h4 className={styles.sectionTitle}>
@@ -105,9 +134,77 @@ const InterviewReviewModal: React.FC<InterviewReviewModalProps> = ({
                     <p className={styles.sectionContent}>
                       {answer.ai_feedback}
                     </p>
+
+                    {answer.rating && (
+                      <div className={styles.feedbackRating}>
+                        <span className={styles.feedbackRatingLabel}>
+                          Your rating:
+                        </span>
+                        <div
+                          className={
+                            answer.rating.rating === 'LIKE'
+                              ? styles.likeIndicator
+                              : styles.dislikeIndicator
+                          }
+                        >
+                          {answer.rating.rating === 'LIKE' ? (
+                            <>
+                              <ThumbsUp
+                                size={14}
+                                className={styles.ratingThumbIcon}
+                              />{' '}
+                              <span>Helpful</span>
+                            </>
+                          ) : (
+                            <>
+                              <ThumbsDown
+                                size={14}
+                                className={styles.ratingThumbIcon}
+                              />{' '}
+                              <span>Not Helpful</span>
+                            </>
+                          )}
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
               ))}
+
+              {interviewData.feedback && (
+                <div className={styles.feedbackSection}>
+                  <h3 className={styles.feedbackTitle}>Your Feedback</h3>
+                  <div className={styles.feedbackCard}>
+                    <div className={styles.feedbackRatingStars}>
+                      <p className={styles.ratingLabel}>Overall Rating:</p>
+                      <div className={styles.starRating}>
+                        {Array.from({ length: 5 }).map((_, i) => (
+                          <span
+                            key={i}
+                            className={`${styles.star} ${
+                              i < (interviewData.feedback?.rating || 0)
+                                ? styles.starActive
+                                : ''
+                            }`}
+                          >
+                            ★
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                    <p className={styles.feedbackContent}>
+                      {interviewData.feedback.content}
+                    </p>
+                    <p className={styles.feedbackDate}>
+                      Submitted on{' '}
+                      {format(
+                        new Date(interviewData.feedback.created_at),
+                        'PPP'
+                      )}
+                    </p>
+                  </div>
+                </div>
+              )}
             </div>
           )}
         </div>

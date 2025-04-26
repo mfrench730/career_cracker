@@ -1,5 +1,14 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react'
-import { X, Mic, MicOff, Send, SkipForward, CheckCircle } from 'lucide-react'
+import {
+  X,
+  Mic,
+  MicOff,
+  Send,
+  SkipForward,
+  CheckCircle,
+  ThumbsUp,
+  ThumbsDown,
+} from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { Alert, AlertDescription } from '@/components/ui/alert'
@@ -9,11 +18,13 @@ import { useInterview } from '@/context/InterviewContext'
 interface InterviewModalProps {
   isOpen: boolean
   onClose: () => void
+  onInterviewComplete: (interviewId: number) => void
 }
 
 const ActiveInterviewModal: React.FC<InterviewModalProps> = ({
   isOpen,
   onClose,
+  onInterviewComplete,
 }) => {
   const {
     currentSession,
@@ -22,6 +33,8 @@ const ActiveInterviewModal: React.FC<InterviewModalProps> = ({
     completeInterview,
     skipQuestion,
     resetInterview,
+    rateQuestion,
+    getQuestionRating,
   } = useInterview()
 
   const [response, setResponse] = useState('')
@@ -34,10 +47,35 @@ const ActiveInterviewModal: React.FC<InterviewModalProps> = ({
   const [currentQuestionNumber, setCurrentQuestionNumber] = useState(1)
   const [displayedFeedback, setDisplayedFeedback] = useState('')
   const [isTyping, setIsTyping] = useState(false)
+  const [questionRating, setQuestionRating] = useState<string | null>(null)
 
   const recognitionRef = useRef<SpeechRecognition | null>(null)
   const hasRecognitionSupport =
     'SpeechRecognition' in window || 'webkitSpeechRecognition' in window
+
+  useEffect(() => {
+    if (currentQuestion && currentSession) {
+      const checkForExistingRating = async () => {
+        try {
+          if (getQuestionRating) {
+            const ratingData = await getQuestionRating(
+              currentQuestion.id,
+              currentSession.id
+            )
+            if (ratingData && ratingData.rating) {
+              setQuestionRating(ratingData.rating)
+            } else {
+              setQuestionRating(null)
+            }
+          }
+        } catch (error) {
+          console.error('Error fetching question rating:', error)
+        }
+      }
+
+      checkForExistingRating()
+    }
+  }, [currentQuestion, currentSession, getQuestionRating])
 
   useEffect(() => {
     if (isOpen) {
@@ -52,19 +90,35 @@ const ActiveInterviewModal: React.FC<InterviewModalProps> = ({
   }, [isOpen, currentSession])
 
   useEffect(() => {
-    if (feedback && feedback !== displayedFeedback) {
+    if (feedback) {
+      setDisplayedFeedback('')
       setIsTyping(true)
+
       let index = 0
+      const typingSpeed = 30
+
       const timer = setInterval(() => {
-        setDisplayedFeedback(feedback.substring(0, index + 1))
-        index++
+        setDisplayedFeedback((prev) => {
+          if (index < feedback.length) {
+            index++
+            return feedback.substring(0, index)
+          }
+          return prev
+        })
+
         if (index >= feedback.length) {
           clearInterval(timer)
           setIsTyping(false)
         }
-      }, 30)
+      }, typingSpeed)
 
-      return () => clearInterval(timer)
+      return () => {
+        clearInterval(timer)
+        if (feedback && index < feedback.length) {
+          setDisplayedFeedback(feedback)
+          setIsTyping(false)
+        }
+      }
     }
   }, [feedback])
 
@@ -91,12 +145,13 @@ const ActiveInterviewModal: React.FC<InterviewModalProps> = ({
     } finally {
       setIsSubmitting(false)
     }
-  }, [response, submitResponse, currentQuestion])
+  }, [response, submitResponse, currentQuestion, currentQuestionNumber])
 
   const handleSkipQuestion = useCallback(async () => {
     setResponse('')
     setFeedback(null)
     setIsResponseSubmitted(false)
+    setQuestionRating(null)
     await skipQuestion()
   }, [skipQuestion])
 
@@ -104,6 +159,7 @@ const ActiveInterviewModal: React.FC<InterviewModalProps> = ({
     setResponse('')
     setFeedback(null)
     setIsResponseSubmitted(false)
+    setQuestionRating(null)
     setCurrentQuestionNumber((prev) => Math.min(prev + 1, 5))
     await skipQuestion()
   }, [skipQuestion])
@@ -125,10 +181,39 @@ const ActiveInterviewModal: React.FC<InterviewModalProps> = ({
       recognitionRef.current.stop()
     }
     completeInterview()
+    if (currentSession) {
+      onInterviewComplete(currentSession.id)
+    }
     setCurrentQuestionNumber(1)
     resetInterview()
     onClose()
-  }, [isListening, onClose, completeInterview, resetInterview])
+  }, [
+    isListening,
+    onClose,
+    completeInterview,
+    resetInterview,
+    onInterviewComplete,
+    currentSession,
+  ])
+
+  const handleRateQuestion = useCallback(
+    async (rating: string) => {
+      if (!currentQuestion || !currentSession) return
+      if (questionRating === rating) return
+
+      setQuestionRating(rating)
+
+      try {
+        if (rateQuestion) {
+          await rateQuestion(currentQuestion.id, currentSession.id, rating)
+        }
+      } catch (error) {
+        console.error('Error rating question:', error)
+        setQuestionRating(null)
+      }
+    },
+    [currentQuestion, currentSession, rateQuestion, questionRating]
+  )
 
   useEffect(() => {
     if (hasRecognitionSupport) {
@@ -191,6 +276,7 @@ const ActiveInterviewModal: React.FC<InterviewModalProps> = ({
       setFeedback(null)
       setIsListening(false)
       setIsResponseSubmitted(false)
+      setQuestionRating(null)
       if (!currentSession) {
         setCurrentQuestionNumber(1)
       }
@@ -240,6 +326,7 @@ const ActiveInterviewModal: React.FC<InterviewModalProps> = ({
             <X size={18} />
           </button>
         </div>
+
         <div className={styles.modalBody}>
           <div className={styles.interviewGrid}>
             <div className={styles.questionSection}>
@@ -301,6 +388,64 @@ const ActiveInterviewModal: React.FC<InterviewModalProps> = ({
                           {displayedFeedback}
                           {isTyping && <span className={styles.cursor}>|</span>}
                         </p>
+
+                        {isResponseSubmitted && (
+                          <div className={styles.ratingButtons}>
+                            <p className={styles.ratingLabel}>
+                              Was this question helpful?
+                            </p>
+                            <div className={styles.ratingControls}>
+                              <Button
+                                variant={
+                                  questionRating === 'LIKE'
+                                    ? 'default'
+                                    : 'outline'
+                                }
+                                size="sm"
+                                onClick={() => handleRateQuestion('LIKE')}
+                                className={`${styles.ratingButton} ${
+                                  questionRating === 'LIKE'
+                                    ? styles.ratingButtonActive
+                                    : ''
+                                }`}
+                              >
+                                <ThumbsUp
+                                  size={16}
+                                  className={`mr-1 ${
+                                    questionRating === 'LIKE'
+                                      ? 'text-white'
+                                      : ''
+                                  }`}
+                                />
+                                Helpful
+                              </Button>
+                              <Button
+                                variant={
+                                  questionRating === 'DISLIKE'
+                                    ? 'default'
+                                    : 'outline'
+                                }
+                                size="sm"
+                                onClick={() => handleRateQuestion('DISLIKE')}
+                                className={`${styles.ratingButton} ${
+                                  questionRating === 'DISLIKE'
+                                    ? styles.ratingButtonActive
+                                    : ''
+                                }`}
+                              >
+                                <ThumbsDown
+                                  size={16}
+                                  className={`mr-1 ${
+                                    questionRating === 'DISLIKE'
+                                      ? 'text-white'
+                                      : ''
+                                  }`}
+                                />
+                                Not Helpful
+                              </Button>
+                            </div>
+                          </div>
+                        )}
                       </div>
                     </AlertDescription>
                   </Alert>
@@ -309,6 +454,7 @@ const ActiveInterviewModal: React.FC<InterviewModalProps> = ({
             </div>
           </div>
         </div>
+
         <div className={styles.modalFooter}>
           {!isLastQuestion && (
             <Button

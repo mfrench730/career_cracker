@@ -56,3 +56,30 @@ class InterviewAnswer(models.Model):
 
     def __str__(self):
         return f"Answer for Interview {self.interview.id} - Question {self.question.id}"
+    
+class QuestionRating(models.Model):
+    RATING_CHOICES = [
+        ('LIKE', 'Like'),
+        ('DISLIKE', 'Dislike')
+    ]
+    
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    question = models.ForeignKey(CSQuestion, on_delete=models.CASCADE)
+    interview = models.ForeignKey(Interview, on_delete=models.CASCADE)
+    rating = models.CharField(max_length=10, choices=RATING_CHOICES)
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    class Meta:
+        unique_together = ['user', 'question', 'interview']
+    
+    def __str__(self):
+        return f"{self.user.username} - {self.rating} - {self.question_id}"
+
+class InterviewFeedback(models.Model):
+    interview = models.OneToOneField(Interview, on_delete=models.CASCADE, related_name='feedback')
+    content = models.TextField()
+    rating = models.PositiveSmallIntegerField(default=0)
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    def __str__(self):
+        return f"Feedback for Interview #{self.interview.interview_number}"
