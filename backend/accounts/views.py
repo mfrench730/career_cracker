@@ -16,7 +16,7 @@ def protected_view(request):
 
 class LoginView(APIView):
     permission_classes = [AllowAny]
-    
+
     def options(self, request, *args, **kwargs):
         """Handle OPTIONS requests explicitly"""
         response = Response()
@@ -28,22 +28,23 @@ class LoginView(APIView):
         try:
             username = request.data.get('username', '').strip().lower()
             password = request.data.get('password', '')
-            
+
             if not username or not password:
                 return Response(
-                    {"error": "Both fields are required"},
+                    {"error": "Username and password are required."},
                     status=status.HTTP_400_BAD_REQUEST
                 )
 
             user = authenticate(username=username, password=password)
             if not user:
                 return Response(
-                    {"error": "Invalid credentials"},
+                    {"error": "Invalid username or password."},
                     status=status.HTTP_401_UNAUTHORIZED
                 )
 
             refresh = RefreshToken.for_user(user)
             return Response({
+                "message": "Login successful",
                 "access": str(refresh.access_token),
                 "refresh": str(refresh),
                 "user": {
@@ -52,11 +53,10 @@ class LoginView(APIView):
                     "email": user.email
                 }
             }, status=status.HTTP_200_OK)
-            
+
         except Exception as e:
-            logger.error(f"Login error: {str(e)}", exc_info=True)
             return Response(
-                {"error": "Internal server error"},
+                {"error": "An error occurred during login"},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
 
