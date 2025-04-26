@@ -32,8 +32,6 @@ def createCSQuestion(job_title):
 
             Question: 
         """
-        
-
 
         completion = client.chat.completions.create(
         model="gpt-3.5-turbo",
