@@ -39,11 +39,11 @@ services:
     tty: true
 
   db:
-    image: postgres:13
+    image: postgres:16
     environment:
       POSTGRES_DB: careercracker
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
+      POSTGRES_PASSWORD: password
     volumes:
       - postgres_data:/var/lib/postgresql/data
     ports:
