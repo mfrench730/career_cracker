@@ -48,8 +48,8 @@ class LoginView(APIView):
             refresh = RefreshToken.for_user(user)
             return Response({
                 "message": "Login successful",
-                "access": str(refresh.access_token),
-                "refresh": str(refresh),
+                "token": str(refresh.access_token),
+                "refresh_token": str(refresh),
                 "user": {
                     "id": user.id,
                     "username": user.username,
@@ -80,8 +80,8 @@ class SignUpView(APIView):
                 
                 return Response({
                     "message": "User created successfully",
-                    "access": str(refresh.access_token),
-                    "refresh": str(refresh),
+                    "token": str(refresh.access_token),
+                    "refresh_token": str(refresh),
                     "user": {
                         "id": user.id,
                         "username": user.username,
