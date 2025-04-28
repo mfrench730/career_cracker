@@ -9,6 +9,10 @@ import InterviewModal from '@/components/interview/ActiveInterviewModal'
 import InterviewFeedbackModal from '@/components/interview/InterviewFeedbackModal'
 import { Loader2 } from 'lucide-react'
 import { PastInterview } from '@/types/interview'
+import JobTitleModal from '@/components/interview/JobTitleModal'
+import { updateUserProfile } from '@/services/accountService'
+
+
 
 const InterviewStart: React.FC = () => {
   const {
@@ -27,6 +31,10 @@ const InterviewStart: React.FC = () => {
   const [isNewInterviewOpen, setIsNewInterviewOpen] = useState(false)
   const [isStartingInterview, setIsStartingInterview] = useState(false)
   const [isFeedbackModalOpen, setIsFeedbackModalOpen] = useState(false)
+
+  const [isJobTitleModalOpen, setIsJobTitleModalOpen] = useState(false)
+
+
   const [feedbackInterviewId, setFeedbackInterviewId] = useState<number | null>(
     null
   )
@@ -53,8 +61,39 @@ const InterviewStart: React.FC = () => {
     setSelectedInterviewId(null)
   }, [])
 
-  const handleStartInterview = useCallback(async () => {
+  const handleStartInterview = useCallback(() => {
+    setIsJobTitleModalOpen(true)
+  }, [])
+  
+  
+
+  const handleCloseNewInterview = useCallback(() => {
+    setIsNewInterviewOpen(false)
+    fetchPastInterviews(currentPage, limit).catch(console.error)
+  }, [fetchPastInterviews, currentPage])
+
+  const handleConfirmJobTitle = useCallback(async (newJobTitle?: string) => {
+    setIsJobTitleModalOpen(false)
     setIsStartingInterview(true)
+  
+    try {
+      if (newJobTitle) {
+        await updateUserProfile({ target_job_title: newJobTitle })
+      }
+      await startInterview()
+      setIsNewInterviewOpen(true)
+    } catch (error) {
+      console.error('Failed to start interview:', error)
+    } finally {
+      setIsStartingInterview(false)
+    }
+  }, [startInterview])
+  
+  
+  const handleSkipJobTitle = useCallback(async () => {
+    setIsJobTitleModalOpen(false)
+    setIsStartingInterview(true)
+  
     try {
       await startInterview()
       setIsNewInterviewOpen(true)
@@ -64,11 +103,8 @@ const InterviewStart: React.FC = () => {
       setIsStartingInterview(false)
     }
   }, [startInterview])
+  
 
-  const handleCloseNewInterview = useCallback(() => {
-    setIsNewInterviewOpen(false)
-    fetchPastInterviews(currentPage, limit).catch(console.error)
-  }, [fetchPastInterviews, currentPage])
 
   const handleOpenFeedbackModal = useCallback((interviewId: number) => {
     setFeedbackInterviewId(interviewId)
@@ -279,6 +315,13 @@ const InterviewStart: React.FC = () => {
           onSubmit={handleSubmitFeedback}
         />
       )}
+
+      <JobTitleModal
+        isOpen={isJobTitleModalOpen}
+        onClose={() => setIsJobTitleModalOpen(false)}
+        onConfirm={handleConfirmJobTitle}
+        onSkip={handleSkipJobTitle}
+      />
     </div>
   )
 }
