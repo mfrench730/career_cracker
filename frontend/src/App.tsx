@@ -7,6 +7,7 @@ import {
 } from 'react-router-dom'
 import { AuthProvider } from './context/AuthContext'
 import { InterviewProvider } from './context/InterviewContext'
+import { ProfileProvider } from './context/ProfileContext'
 import Layout from './components/layout/Layout'
 import Dashboard from './pages/dashboard/Dashboard'
 import Interview from './pages/interview/AiInterview'
@@ -67,7 +68,9 @@ const AppRoutes = () => (
       path="/dashboard"
       element={
         <ProtectedRoute>
-          <Dashboard />
+          <ProfileProvider>
+            <Dashboard />
+          </ProfileProvider>
         </ProtectedRoute>
       }
     />
