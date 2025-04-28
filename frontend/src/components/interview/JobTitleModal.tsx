@@ -1,7 +1,6 @@
 import React, { useState } from 'react'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import styles from '@/styles/interview.module.css'
+import { X } from 'lucide-react'
+import styles from '@/styles/jobTitleModal.module.css'
 
 interface JobTitleModalProps {
   isOpen: boolean
@@ -25,30 +24,42 @@ const JobTitleModal: React.FC<JobTitleModalProps> = ({
   }
 
   return (
-    <>
-      <div className={styles.modalOverlay} onClick={onClose} />
-      <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
-        <h2 className="text-xl font-bold mb-4">Update Target Job Title</h2>
-        <p className="text-muted-foreground mb-6">
-          Would you like to change your target job title for this interview?
-          <br />
-          If you skip, we'll use the one you registered with.
-        </p>
+    <div className={styles.modalOverlay}>
+      <div className={styles.modalContainer}>
+        <div className={styles.modalHeader}>
+          <h2 className={styles.modalTitle}>Update Target Job Title</h2>
+          <button className={styles.closeButton} onClick={onClose}>
+            <X size={20} />
+          </button>
+        </div>
 
-        <Input
-          type="text"
-          placeholder="Enter new job title (optional)"
-          value={newJobTitle}
-          onChange={(e) => setNewJobTitle(e.target.value)}
-          className="mb-6"
-        />
+        <div className={styles.modalBody}>
+          <p className={styles.formLabel}>
+            Would you like to change your target job title for this interview?  
+            If you skip, we'll use the one you registered with.
+          </p>
 
-        <div className="flex justify-end gap-3">
-          <Button variant="outline" onClick={onSkip}>Skip</Button>
-          <Button onClick={handleConfirm}>Confirm</Button>
+          <div className={styles.formGroup}>
+            <input
+              type="text"
+              placeholder="Enter new job title (optional)"
+              value={newJobTitle}
+              onChange={(e) => setNewJobTitle(e.target.value)}
+              className={styles.formInput}
+            />
+          </div>
+
+          <div className={styles.modalActions}>
+            <button className={`${styles.modalButton} ${styles.cancelButton}`} onClick={onSkip}>
+              Skip
+            </button>
+            <button className={`${styles.modalButton} ${styles.confirmButton}`} onClick={handleConfirm}>
+              Confirm
+            </button>
+          </div>
         </div>
       </div>
-    </>
+    </div>
   )
 }
 
