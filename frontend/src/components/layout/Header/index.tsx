@@ -56,6 +56,11 @@ export default function Header({ isOpen }: HeaderProps) {
     }
   }
 
+  const goToProfile = () => {
+    setIsDropdownOpen(false)
+    navigate('/profile')
+  }
+
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -112,7 +117,7 @@ export default function Header({ isOpen }: HeaderProps) {
 
         {isDropdownOpen && (
           <div ref={dropdownRef} className={styles.profileDropdown}>
-            <div className={styles.dropdownItem}>
+            <div className={styles.dropdownItem} onClick={goToProfile}>
               <i className="bx bx-user"></i>
               <span>Profile</span>
             </div>
