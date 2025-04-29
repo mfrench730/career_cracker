@@ -91,7 +91,7 @@ const Dashboard = () => {
           }}
         >
           CareerCracker is an innovative interview preparation platform designed
-          by Professor Mayor's Software Engineering students. Our mission is to
+          by Professor Myers' Software Engineering students. Our mission is to
           help you practice for interviews, explore job opportunities, and
           receive expert feedback to excel in your career journey.
         </p>
