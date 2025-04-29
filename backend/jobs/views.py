@@ -8,10 +8,11 @@ from .utils.OnetWebService import OnetWebService
 from rest_framework.permissions import IsAuthenticated
 import os
 
-
+# API view to retrieve job information using O*NET Web Services
 class get_info_view(APIView):
     permission_classes = [IsAuthenticated]
 
+    # Handle GET request to fetch job description and tasks
     def get(self, request):
         job_title = request.GET.get('job_title')
         if not job_title:
@@ -20,6 +21,7 @@ class get_info_view(APIView):
         # O*NET instance
         onet_ws = OnetWebService(os.environ.get("ONET_USERNAME"), os.environ.get("ONET_PASSWORD"))
 
+        # Fetch job description and tasks using the API client
         description = api_client.get_job_info(api_client.get_soc_code(job_title, onet_ws), onet_ws)
         tasks = api_client.get_tasks(api_client.get_soc_code(job_title, onet_ws), onet_ws)
 
