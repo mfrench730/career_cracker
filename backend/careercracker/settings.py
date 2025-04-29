@@ -10,13 +10,13 @@ from dotenv import load_dotenv
 load_dotenv(Path(__file__).resolve().parent.parent / '.env')
 
 # Make sure defaults are provided if .env is not loaded correctly
-os.environ.setdefault('DB_ENGINE', 'django.db.backends.postgresql')
+"""os.environ.setdefault('DB_ENGINE', 'django.db.backends.postgresql')
 os.environ.setdefault('DB_NAME', 'careercracker')
 os.environ.setdefault('DB_USER', 'postgres')
 os.environ.setdefault('DB_PASSWORD', 'postgres')
 os.environ.setdefault('DB_HOST', 'db')
 os.environ.setdefault('DB_PORT', '5432')
-# =======================
+# ======================="""
 
 
 BASE_DIR = Path(__file__).resolve().parent.parent
