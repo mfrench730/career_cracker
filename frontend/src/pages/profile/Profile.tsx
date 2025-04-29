@@ -6,12 +6,14 @@ import '@/styles/profile.css';
 
 const Profile = () => {
   const { profile, fetchProfile } = useProfile();
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false); // Controls modal visibility
 
+  // Fetch profile on component mount
   useEffect(() => {
     fetchProfile();
   }, [fetchProfile]);
 
+  // Display loading state if profile hasn't loaded yet
   if (!profile) {
     return (
       <div className="dashboardContainer">
@@ -33,15 +35,15 @@ const Profile = () => {
             View and manage your professional information to maximize your interview success
           </p>
         </div>
+        {/* Button to open the edit modal */}
         <button className="ctaButton" onClick={() => setIsEditModalOpen(true)}>
-            Edit Profile
+          Edit Profile
         </button>
       </div>
 
-      {/* Profile Information Section */}
+      {/* Personal Info Section */}
       <div className="infoCard animate delay1">
         <h2 className="sectionHeading">Personal Information</h2>
-        
         <div className="profileDetails">
           <div className="profileRow">
             <div className="profileField">
@@ -53,7 +55,6 @@ const Profile = () => {
               <span className="profileValue">{profile.major}</span>
             </div>
           </div>
-
           <div className="profileRow">
             <div className="profileField">
               <span className="profileLabel">Education Level</span>
@@ -70,7 +71,6 @@ const Profile = () => {
       {/* Career Preferences Section */}
       <div className="infoCard animate delay2">
         <h2 className="sectionHeading">Career Preferences</h2>
-        
         <div className="profileDetails">
           <div className="profileRow">
             <div className="profileField">
@@ -78,7 +78,6 @@ const Profile = () => {
               <span className="profileValue">{profile.target_job_title}</span>
             </div>
           </div>
-
           <div className="profileRow">
             <div className="profileField">
               <span className="profileLabel">Preferred Interview Type</span>
@@ -103,22 +102,23 @@ const Profile = () => {
           <button className="secondaryButton">View Recommendations</button>
         </div>
       </div>
-    <Modal isOpen={isEditModalOpen} onClose={() => setIsEditModalOpen(false)}>
-    <EditProfileForm
-  profile={{
-    full_name: profile.full_name || '',
-    major: profile.major || '',
-    education_level: profile.education_level || '',
-    experience_level: profile.experience_level || '',
-    target_job_title: profile.target_job_title ?? '',
-    preferred_interview_type: profile.preferred_interview_type ?? [],
-    preferred_language: profile.preferred_language ?? '',
-  }}
-  onClose={() => setIsEditModalOpen(false)}
-/>
-    </Modal>
+
+      {/* Modal for editing profile */}
+      <Modal isOpen={isEditModalOpen} onClose={() => setIsEditModalOpen(false)}>
+        <EditProfileForm
+          profile={{
+            full_name: profile.full_name || '',
+            major: profile.major || '',
+            education_level: profile.education_level || '',
+            experience_level: profile.experience_level || '',
+            target_job_title: profile.target_job_title ?? '',
+            preferred_interview_type: profile.preferred_interview_type ?? [],
+            preferred_language: profile.preferred_language ?? '',
+          }}
+          onClose={() => setIsEditModalOpen(false)}
+        />
+      </Modal>
     </div>
-    
   );
 };
 
