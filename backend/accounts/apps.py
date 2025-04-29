@@ -1,3 +1,4 @@
+# Configuration class for the 'accounts' app in the Django project
 from django.apps import AppConfig
 
 

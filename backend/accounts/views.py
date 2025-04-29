@@ -12,21 +12,25 @@ from .models import UserProfile
 import logging
 logger = logging.getLogger(__name__)
 
+# Protected view accessible only to authenticated users
 @api_view(["GET"])
 @permission_classes([IsAuthenticated])
 def protected_view(request):
     return Response({"message": "You have accessed a protected route!"})
 
+# View to handle user login and token generation
 class LoginView(APIView):
     permission_classes = [AllowAny]
 
+    # Handle preflight OPTIONS requests
     def options(self, request, *args, **kwargs):
         """Handle OPTIONS requests explicitly"""
         response = Response()
         response['Access-Control-Allow-Headers'] = 'content-type,authorization'
         response['Access-Control-Allow-Methods'] = 'POST,OPTIONS'
         return response
-
+    
+    # Handle POST request for user login
     def post(self, request):
         try:
             username = request.data.get('username', '').strip().lower()
@@ -64,13 +68,13 @@ class LoginView(APIView):
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
 
+# View to handle user signup and profile creation
 class SignUpView(APIView):
     permission_classes = [AllowAny]
      
+    # Handle POST request for user registration
     def post(self, request):
         try:
-            print(request.data)   # <<< Add this line here
-
             
             serializer = UserSignupSerializer(data=request.data)
             if serializer.is_valid():
