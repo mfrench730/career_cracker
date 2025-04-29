@@ -5,10 +5,12 @@ import { Input } from '@/components/ui/input'
 import { jobService } from '@/services/jobService'
 import { JobDescription } from '@/types/job'
 
+// Component for searching and displaying job information
 const JobSearch: React.FC = () => {
   const [jobTitle, setJobTitle] = useState('')
   const [result, setResult] = useState<JobDescription | null>(null)
 
+  // Handle job search API call
   const handleSearch = async () => {
     if (!jobTitle) return
     try {

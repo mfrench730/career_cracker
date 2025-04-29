@@ -1,7 +1,10 @@
 import axios, { AxiosError } from 'axios'
 import { JobDescription } from '../types/job'
 
+// Service class to handle job-related API requests
 class JobService {
+
+  // Create a configured Axios instance
   private apiClient = axios.create({
     baseURL: '/api',
     headers: {
@@ -11,6 +14,8 @@ class JobService {
   })
 
   constructor() {
+
+    // Add interceptor to include JWT token in requests
     this.apiClient.interceptors.request.use(
       (config) => {
         const token = localStorage.getItem('token')
@@ -23,6 +28,7 @@ class JobService {
     )
   }
 
+  // Handle and format API errors
   private handleError(error: unknown) {
     if (axios.isAxiosError(error)) {
       const axiosError = error as AxiosError<{ error?: string; detail?: string }>
@@ -33,6 +39,7 @@ class JobService {
     throw new Error('Unexpected error occurred')
   }
 
+  // Fetch job description and tasks by job title
   async getCareerInfo(jobTitle: string): Promise<JobDescription> {
     try {
       const response = await this.apiClient.get<JobDescription>(
@@ -46,4 +53,5 @@ class JobService {
   }
 }
 
+// Export a single instance of the service
 export const jobService = new JobService()

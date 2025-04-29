@@ -22,6 +22,5 @@ RUN chmod +x /app/entrypoint.sh
 # Set entrypoint
 ENTRYPOINT ["sh", "/app/entrypoint.sh"]
 
-
 # Default command (can override when running)
 CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]

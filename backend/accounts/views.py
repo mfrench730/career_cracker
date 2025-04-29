@@ -105,9 +105,11 @@ class SignUpView(APIView):
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
 
+# View to retrieve and update the user's profile
 class UserProfileView(APIView):
     permission_classes = [IsAuthenticated]
     
+    # Handle GET request to retrieve user's profile
     def get(self, request):
         """Get the current user's profile"""
         try:
@@ -119,7 +121,8 @@ class UserProfileView(APIView):
                 {"error": "Profile not found"}, 
                 status=status.HTTP_404_NOT_FOUND
             )
-    
+        
+    # Handle PUT request to update user's profile
     def put(self, request):
         """Update the current user's profile"""
         try:
