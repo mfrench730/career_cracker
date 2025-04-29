@@ -1,0 +1,529 @@
+/* Dashboard Module CSS */
+.dashboardContainer {
+  min-height: calc(100vh - 70px);
+  background-color: var(--background-light);
+  padding: 1.5rem;
+  font-family: 'Inter', 'Roboto', -apple-system, BlinkMacSystemFont, sans-serif;
+  max-width: 1440px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.welcomeHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: linear-gradient(135deg, #f8f9fa, #edf2f7);
+  border-radius: 1.5rem;
+  padding: 2.5rem;
+  margin-bottom: 2.5rem;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(107, 70, 193, 0.1);
+  transition: all 0.4s ease;
+}
+
+.welcomeHeader::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #6b46c1, #9f7aea, #6b46c1);
+  background-size: 200% 100%;
+  animation: gradientFlow 5s linear infinite;
+}
+
+@keyframes gradientFlow {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.welcomeHeader:hover {
+  box-shadow: 0 20px 30px -10px rgba(0, 0, 0, 0.1);
+  transform: translateY(-4px);
+}
+
+.welcomeTitle {
+  font-size: 2.5rem;
+  font-weight: 800;
+  background: linear-gradient(45deg, #6b46c1, #9f7aea);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  margin-bottom: 0.75rem;
+  position: relative;
+}
+
+.welcomeTitle::after {
+  content: '';
+  position: absolute;
+  bottom: -8px;
+  left: 0;
+  width: 80px;
+  height: 3px;
+  background: linear-gradient(90deg, #6b46c1, transparent);
+  border-radius: 5px;
+}
+
+.welcomeSubtitle {
+  color: var(--text-secondary);
+  font-size: 1.125rem;
+  max-width: 600px;
+  line-height: 1.6;
+}
+
+.ctaButton {
+  position: relative;
+  padding: 0.9rem 2rem;
+  background: linear-gradient(135deg, #6b46c1, #9f7aea);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.75px;
+  box-shadow: 0 4px 15px rgba(107, 70, 193, 0.3);
+  overflow: hidden;
+  transition: all 0.4s ease;
+  z-index: 1;
+}
+
+.ctaButton::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    120deg,
+    transparent,
+    rgba(255, 255, 255, 0.3),
+    transparent
+  );
+  transition: all 0.6s ease;
+  z-index: -1;
+}
+
+.ctaButton:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(107, 70, 193, 0.4);
+}
+
+.ctaButton:hover::before {
+  left: 100%;
+}
+
+.ctaButton:active {
+  transform: translateY(1px);
+  box-shadow: 0 3px 10px rgba(107, 70, 193, 0.3);
+}
+
+.sectionHeading {
+  font-size: 1.75rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+  background: linear-gradient(45deg, #6b46c1, #9f7aea);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  display: inline-block;
+  position: relative;
+}
+
+.sectionHeading::after {
+  content: '';
+  position: absolute;
+  bottom: -8px;
+  left: 0;
+  width: 40%;
+  height: 3px;
+  background: linear-gradient(90deg, #6b46c1, transparent);
+  border-radius: 5px;
+}
+
+.infoCard {
+  background: white;
+  border-radius: 16px;
+  padding: 2rem;
+  margin-bottom: 2.5rem;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+  border: 1px solid var(--border-color);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.infoCard:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+}
+
+.featureGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.75rem;
+  width: 100%;
+  margin-top: 1rem;
+}
+
+.featureCard {
+  display: flex;
+  flex-direction: column;
+  background: white;
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.04);
+  padding: 2rem 1.75rem;
+  height: 100%;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.featureCard::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
+  background: linear-gradient(to bottom, #6b46c1, #9f7aea);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.featureCard:hover {
+  transform: translateY(-10px) scale(1.02);
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.08);
+  border-color: rgba(107, 70, 193, 0.3);
+}
+
+.featureCard:hover::before {
+  opacity: 1;
+}
+
+.featureIcon {
+  font-size: 3.25rem;
+  margin-bottom: 1.5rem;
+  text-align: center;
+  display: block;
+  position: relative;
+  z-index: 1;
+}
+
+.featureIcon::after {
+  content: '';
+  position: absolute;
+  width: 60px;
+  height: 60px;
+  background: rgba(159, 122, 234, 0.1);
+  border-radius: 50%;
+  z-index: -1;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  transition: all 0.3s ease;
+}
+
+.featureCard:hover .featureIcon::after {
+  width: 70px;
+  height: 70px;
+  background: rgba(159, 122, 234, 0.2);
+}
+
+.featureTitle {
+  background: linear-gradient(45deg, #6b46c1, #9f7aea);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  font-weight: 700;
+  font-size: 1.25rem;
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+.featureDescription {
+  color: var(--text-secondary);
+  text-align: center;
+  line-height: 1.6;
+  font-size: 1rem;
+}
+
+.processContainer {
+  display: flex;
+  justify-content: space-around;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  margin: 2rem 0;
+  position: relative;
+}
+
+.processContainer::before {
+  content: '';
+  position: absolute;
+  top: 3rem;
+  left: 10%;
+  right: 10%;
+  height: 2px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(107, 70, 193, 0.1),
+    rgba(107, 70, 193, 0.2),
+    rgba(107, 70, 193, 0.1),
+    transparent
+  );
+  z-index: 0;
+}
+
+.processStep {
+  text-align: center;
+  padding: 1rem;
+  min-width: 150px;
+  z-index: 1;
+  position: relative;
+}
+
+.processIcon {
+  font-size: 2.5rem;
+  margin-bottom: 0.75rem;
+  position: relative;
+  display: inline-block;
+}
+
+.processIcon::before {
+  content: '';
+  position: absolute;
+  width: 60px;
+  height: 60px;
+  background: white;
+  border-radius: 50%;
+  z-index: -1;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border: 1px solid rgba(107, 70, 193, 0.2);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+}
+
+.processLabel {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.ctaSection {
+  background: white;
+  border-radius: 16px;
+  padding: 3rem 2rem;
+  margin-top: 2.5rem;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+  text-align: center;
+  background-image: linear-gradient(
+    135deg,
+    rgba(107, 70, 193, 0.05) 0%,
+    rgba(159, 122, 234, 0.05) 100%
+  );
+  border: 1px solid rgba(107, 70, 193, 0.1);
+}
+
+.ctaTitle {
+  font-size: 1.75rem;
+  font-weight: 700;
+  margin-bottom: 1.25rem;
+  background: linear-gradient(45deg, #6b46c1, #9f7aea);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+
+.ctaText {
+  font-size: 1.1rem;
+  line-height: 1.6;
+  color: var(--text-primary);
+  margin-bottom: 2rem;
+  max-width: 700px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.buttonGroup {
+  display: flex;
+  justify-content: center;
+  gap: 1.25rem;
+  flex-wrap: wrap;
+}
+
+.primaryButton {
+  width: auto;
+  min-width: 200px;
+  background: linear-gradient(to right, #6b46c1, #9f7aea);
+  color: white;
+  border: none;
+  padding: 0.9rem 1.75rem;
+  border-radius: 12px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  box-shadow: 0 8px 15px rgba(107, 70, 193, 0.2);
+}
+
+.primaryButton:hover {
+  opacity: 0.95;
+  transform: translateY(-3px);
+  box-shadow: 0 12px 20px rgba(107, 70, 193, 0.3);
+}
+
+.secondaryButton {
+  width: auto;
+  min-width: 200px;
+  background: white;
+  color: #6b46c1;
+  border: 2px solid #6b46c1;
+  padding: 0.85rem 1.75rem;
+  border-radius: 12px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.secondaryButton:hover {
+  background: rgba(107, 70, 193, 0.05);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.05);
+}
+
+/* Responsive Styles */
+@media (max-width: 1280px) {
+  .dashboardContainer {
+    padding: 1.25rem;
+    max-width: 95%;
+  }
+
+  .welcomeHeader {
+    padding: 2rem;
+  }
+
+  .featureGrid {
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  .dashboardContainer {
+    padding: 1rem;
+    max-width: 100%;
+  }
+
+  .welcomeHeader {
+    flex-direction: column;
+    text-align: center;
+    padding: 2rem 1.5rem;
+    gap: 1.5rem;
+  }
+
+  .welcomeTitle::after {
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  .welcomeSubtitle {
+    margin: 0 auto;
+  }
+
+  .sectionHeading {
+    display: block;
+    text-align: center;
+  }
+
+  .sectionHeading::after {
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  .featureGrid {
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+  }
+
+  .processContainer::before {
+    display: none;
+  }
+
+  .processContainer {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .buttonGroup {
+    flex-direction: column;
+    gap: 1rem;
+    align-items: center;
+  }
+
+  .primaryButton,
+  .secondaryButton {
+    width: 100%;
+    max-width: 280px;
+  }
+}
+
+/* Animation Styles */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate {
+  animation: fadeInUp 0.6s ease forwards;
+  opacity: 0;
+}
+
+.delay1 {
+  animation-delay: 0.1s;
+}
+
+.delay2 {
+  animation-delay: 0.2s;
+}
+
+.delay3 {
+  animation-delay: 0.3s;
+}
+
+.delay4 {
+  animation-delay: 0.4s;
+}
+
+/* Pulse animation for icons */
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.pulsateIcon {
+  animation: pulse 2s infinite ease-in-out;
+}
