@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom'
 import { useAuth } from '../../../context/AuthContext'
 import styles from '@/styles/header.module.css'
 import { CircleUserRound } from "lucide-react"
+import { useProfile } from '@/context/ProfileContext'
 
 
 
@@ -25,7 +26,10 @@ export default function Header({ isOpen }: HeaderProps) {
   const { logout } = useAuth()
   const navigate = useNavigate()
   const location = useLocation()
-
+  const { profile, fetchProfile } = useProfile()
+  useEffect(() => {
+    fetchProfile()
+  }, [fetchProfile])
 
   const getPageTitle = () => {
     if (PAGE_TITLES[location.pathname]) {
@@ -39,6 +43,8 @@ export default function Header({ isOpen }: HeaderProps) {
 
     return matchedRoute ? PAGE_TITLES[matchedRoute] : 'CareerCracker'
   }
+
+
 
   const handleSignOut = async (e: React.MouseEvent) => {
     e.preventDefault()
@@ -95,10 +101,12 @@ export default function Header({ isOpen }: HeaderProps) {
           className={styles.profile}
           onClick={() => setIsDropdownOpen(!isDropdownOpen)}
         >
+        
+        
           <CircleUserRound size={32} strokeWidth={2} />
           <div className={styles.profileInfo}>
-          <span className={styles.name}>Username</span>
-            <span className={styles.role}>Developer</span>
+          <span className={styles.name}>{profile?.full_name}</span>
+            <span className={styles.role}>{profile?.target_job_title}</span>
           </div>
         </div>
 

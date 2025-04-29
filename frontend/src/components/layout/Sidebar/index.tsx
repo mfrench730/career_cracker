@@ -2,6 +2,8 @@ import { Link, useLocation } from 'react-router-dom'
 import { useAuth } from '../../../context/AuthContext'
 import styles from '@/styles/sidebar.module.css'
 import { CircleUserRound } from "lucide-react";
+import { useProfile } from '@/context/ProfileContext'
+import { useEffect } from 'react'
 
 interface SidebarProps {
   isOpen: boolean
@@ -29,6 +31,10 @@ const NAVIGATION_ITEMS = [
 export default function Sidebar({ isOpen, onToggle }: SidebarProps) {
   const location = useLocation()
   const { logout } = useAuth()
+   const { profile, fetchProfile } = useProfile()
+    useEffect(() => {
+      fetchProfile()
+    }, [fetchProfile])
 
   return (
     <div className={`${styles.sidebar} ${isOpen ? styles.open : ''}`}>
@@ -70,8 +76,8 @@ export default function Sidebar({ isOpen, onToggle }: SidebarProps) {
               <div className={styles['profile-details']}>
                 <CircleUserRound size={32} strokeWidth={2} />
                 <div className={styles.name_job}>
-                  <div className={styles.name}>Username</div>
-                  <div className={styles.job}>Developer</div>
+                  <div className={styles.name}>{profile?.username}</div>
+                  <div className={styles.job}>{profile?.target_job_title}</div>
                 </div>
               </div>
               <i className="bx bx-log-out" id="log_out" onClick={logout}></i>
