@@ -89,10 +89,13 @@
   font-size: 2rem;
   font-weight: 700;
   background: linear-gradient(45deg, #6b46c1, #9f7aea);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  -webkit-background-clip: text; /* For WebKit browsers */
+  background-clip: text;          /* Standard syntax (future-proof) */
+  -webkit-text-fill-color: transparent; /* Makes the text background visible */
+  color: transparent; /* Also add this for extra safety */
   margin-bottom: 0.5rem;
 }
+
 
 .pageSubtitle {
   color: var(--text-secondary);
@@ -129,8 +132,10 @@
 
 .cardTitle {
   background: linear-gradient(45deg, #6b46c1, #9f7aea);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  -webkit-background-clip: text; /* WebKit browsers */
+  background-clip: text;          /* Standard syntax */
+  -webkit-text-fill-color: transparent; /* Make text transparent */
+  color: transparent;             /* Optional but safer */
   font-weight: 600;
   font-size: 1.125rem;
 }
@@ -296,3 +301,4 @@
   opacity: 0;
   animation-delay: calc(var(--index) * 0.1s);
 }
+
