@@ -37,9 +37,12 @@
     font-weight: 700;
     background: linear-gradient(45deg, #6b46c1, #9f7aea);
     -webkit-background-clip: text;
+    background-clip: text; /* Standard syntax */
     -webkit-text-fill-color: transparent;
+    color: transparent; /* Optional but recommended */
     margin: 0;
   }
+  
   
   .modalBody {
     display: flex;
