@@ -27,7 +27,11 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
     return <Navigate to="/signin" replace />
   }
 
-  return <Layout>{children}</Layout>
+  return (
+    <ProfileProvider>
+      <Layout>{children}</Layout>
+    </ProfileProvider>
+  )
 }
 
 const PublicRoute = ({ children }: { children: React.ReactNode }) => {
