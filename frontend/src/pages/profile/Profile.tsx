@@ -30,9 +30,9 @@ const Profile = () => {
       {/* Profile Header */}
       <div className="welcomeHeader animate">
         <div>
-          <h1 className="welcomeTitle">Professional Profile</h1>
+          <h1 className="welcomeTitle">Profile</h1>
           <p className="welcomeSubtitle">
-            View and manage your professional information to maximize your interview success
+            View and manage your information to maximize your interview success
           </p>
         </div>
         {/* Button to open the edit modal */}
@@ -88,18 +88,6 @@ const Profile = () => {
               <span className="profileValue">{profile.preferred_language}</span>
             </div>
           </div>
-        </div>
-      </div>
-
-      {/* CTA Section */}
-      <div className="ctaSection animate delay3">
-        <h3 className="ctaTitle">Ready to Enhance Your Profile?</h3>
-        <p className="ctaText">
-          Complete your profile to get personalized interview recommendations and improve your chances of success.
-        </p>
-        <div className="buttonGroup">
-          <button className="primaryButton">Update Skills</button>
-          <button className="secondaryButton">View Recommendations</button>
         </div>
       </div>
 

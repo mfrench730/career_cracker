@@ -119,7 +119,7 @@ const SignUp: React.FC = () => {
           </div>
 
           <div className="form-group">
-            <label htmlFor="username" className="label">User Name</label>
+            <label htmlFor="username" className="label">Username</label>
             <input type="text" id="username" name="username" value={formData.username} onChange={handleChange} required />
           </div>
 
