@@ -10,6 +10,7 @@ import { InterviewProvider } from './context/InterviewContext'
 import { ProfileProvider } from './context/ProfileContext'
 import Layout from './components/layout/Layout'
 import Dashboard from './pages/dashboard/Dashboard'
+import ProfilePage from './pages/profile/Profile'
 import Interview from './pages/interview/AiInterview'
 import Jobs from './pages/jobs/Jobs'
 import SignIn from './pages/auth/SignIn'
@@ -93,6 +94,14 @@ const AppRoutes = () => (
       element={
         <ProtectedRoute>
           <Jobs />
+        </ProtectedRoute>
+      }
+    />
+    <Route
+      path="/profile"
+      element={
+        <ProtectedRoute>
+          <ProfilePage />
         </ProtectedRoute>
       }
     />
