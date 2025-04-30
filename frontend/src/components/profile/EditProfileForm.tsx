@@ -1,99 +1,142 @@
 import React, { useState } from 'react';
-import { useProfile } from '@/context/ProfileContext'; // Custom context for profile state and updates
+import { useProfile } from '@/context/ProfileContext';
 
-// Define the shape of the profile object expected in this form
+// Define the shape of the profile object
 type Profile = {
   full_name: string;
   major: string;
   education_level: string;
   experience_level: string;
   target_job_title: string;
-  preferred_interview_type: string[]; // Stored as an array of strings
+  preferred_interview_type: string[];
   preferred_language: string;
 };
 
-// Define the props expected by this component
+// Props interface for the EditProfileForm component
 interface EditProfileFormProps {
-  profile: Profile;           // Initial profile data to edit
-  onClose: () => void;        // Function to close the modal or form
+  profile: Profile;           // Initial profile data passed from the parent
+  onClose: () => void;        // Callback to close the form
 }
 
-// Functional component definition
+// Functional component to edit user profile
 const EditProfileForm: React.FC<EditProfileFormProps> = ({ profile, onClose }) => {
-  const { updateProfile } = useProfile(); // Access the context function to update profile
+  const { updateProfile } = useProfile(); // Get update function from context
 
-  // Initialize form state with the passed-in profile data.
-  // Default to empty strings or arrays in case of missing values.
+  // Local state to manage form input values
   const [formData, setFormData] = useState<Profile>({
     full_name: profile.full_name || '',
+    target_job_title: profile.target_job_title || '',
     major: profile.major || '',
     education_level: profile.education_level || '',
     experience_level: profile.experience_level || '',
-    target_job_title: profile.target_job_title ?? '',
-    preferred_interview_type: profile.preferred_interview_type ?? [],
-    preferred_language: profile.preferred_language ?? '',
+    preferred_interview_type: profile.preferred_interview_type || [],
+    preferred_language: profile.preferred_language || '',
   });
 
-  // Handle changes to form inputs
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
-  ) => {
+  // Handle input text changes (e.g., full_name, target_job_title)
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-
-    // Special handling for array input (e.g., a comma-separated list)
-    if (name === 'preferred_interview_type') {
-      setFormData((prev: Profile) => ({
-        ...prev,
-        [name]: value.split(',').map(item => item.trim()), // Convert comma-separated string to array
-      }));
-    } else {
-      // Generic update for other text inputs
-      setFormData((prev: Profile) => ({
-        ...prev,
-        [name]: value,
-      }));
-    }
+    setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  // Handle form submission
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault(); // Prevent page reload
-    await updateProfile(formData); // Call context function to save the updated profile
-    onClose(); // Close the modal or form
+  // Handle select dropdown changes
+  const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  // Render the form UI
+  // Handle checkbox toggling for preferred interview types
+  const handleCheckboxChange = (type: string) => {
+    setFormData(prev => {
+      const exists = prev.preferred_interview_type.includes(type);
+      return {
+        ...prev,
+        preferred_interview_type: exists
+          ? prev.preferred_interview_type.filter(t => t !== type) // Remove if already selected
+          : [...prev.preferred_interview_type, type],             // Add if not selected
+      };
+    });
+  };
+
+  // Handle form submission: update profile and close form
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    await updateProfile(formData); // Submit updated profile to backend
+    onClose();                     // Close the form
+  };
+
   return (
     <form onSubmit={handleSubmit}>
       <h2>Edit Profile</h2>
 
-      {/* Input fields for each profile property */}
+      {/* Full Name Input */}
       <label>Full Name</label>
       <input name="full_name" value={formData.full_name} onChange={handleChange} />
 
+      {/* Major Dropdown */}
       <label>Major</label>
-      <input name="major" value={formData.major} onChange={handleChange} />
+      <select name="major" value={formData.major} onChange={handleSelectChange}>
+        <option value="">Select Major</option>
+        <option value="Computer Science">Computer Science</option>
+        <option value="Mechanical Engineering">Mechanical Engineering</option>
+        <option value="Electrical Engineering">Electrical Engineering</option>
+        <option value="Business">Business</option>
+      </select>
 
+      {/* Education Level Dropdown */}
       <label>Education Level</label>
-      <input name="education_level" value={formData.education_level} onChange={handleChange} />
+      <select name="education_level" value={formData.education_level} onChange={handleSelectChange}>
+        <option value="">Select Education Level</option>
+        <option value="High School">High School</option>
+        <option value="Undergraduate">Undergraduate</option>
+        <option value="Graduate">Graduate</option>
+        <option value="PhD">PhD</option>
+        <option value="Other">Other</option>
+      </select>
 
+      {/* Experience Level Dropdown */}
       <label>Experience Level</label>
-      <input name="experience_level" value={formData.experience_level} onChange={handleChange} />
+      <select name="experience_level" value={formData.experience_level} onChange={handleSelectChange}>
+        <option value="">Select Experience Level</option>
+        <option value="No Experience">No Experience</option>
+        <option value="Entry-Level">Entry-Level</option>
+        <option value="1-3 Years">1-3 Years</option>
+        <option value="3+ Years">3+ Years</option>
+      </select>
 
+      {/* Target Job Title Input */}
       <label>Target Job Title</label>
       <input name="target_job_title" value={formData.target_job_title} onChange={handleChange} />
 
+      {/* Preferred Interview Type Checkboxes */}
       <label>Preferred Interview Type</label>
-      <input
-        name="preferred_interview_type"
-        value={formData.preferred_interview_type.join(', ')} // Convert array to string for display
-        onChange={handleChange}
-      />
+      <div className="checkbox-group">
+        {['Behavioral', 'Technical', 'System Design', 'Case Study'].map(type => (
+          <div key={type} className="checkbox-item">
+            <input
+              type="checkbox"
+              id={`interview-${type}`}
+              checked={formData.preferred_interview_type.includes(type)}
+              onChange={() => handleCheckboxChange(type)}
+            />
+            <label htmlFor={`interview-${type}`} className="checkbox-label">
+              {type}
+            </label>
+          </div>
+        ))}
+      </div>
 
-      <label>Preferred Language</label>
-      <input name="preferred_language" value={formData.preferred_language} onChange={handleChange} />
+      {/* Preferred Programming Language Dropdown */}
+      <label>Preferred Programming Language</label>
+      <select name="preferred_language" value={formData.preferred_language} onChange={handleSelectChange}>
+        <option value="">Select Language</option>
+        <option value="Python">Python</option>
+        <option value="Java">Java</option>
+        <option value="C++">C++</option>
+        <option value="JavaScript">JavaScript</option>
+      </select>
 
-      {/* Submit and Cancel buttons */}
+      {/* Submit and Cancel Buttons */}
       <div style={{ marginTop: '1rem' }}>
         <button type="submit" className="primaryButton">Save</button>
         <button type="button" className="secondaryButton" onClick={onClose}>Cancel</button>
