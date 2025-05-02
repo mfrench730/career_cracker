@@ -1,42 +1,48 @@
+/* Layout wrapper for the entire app, centers content and stretches full height */
 .layoutContainer {
   position: relative;
-  min-height: 100vh;
+  min-height: 100vh; /* Full viewport height */
   width: 100%;
   display: flex;
   justify-content: center;
 }
 
+/* Reset styles for all elements: removes default spacing and ensures border-box sizing */
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
+/* Main content container */
 .mainContainer {
   position: relative;
-  flex-grow: 1;
-  margin-left: 70px;
-  margin-top: 70px;
-  width: calc(100% - 70px);
+  flex-grow: 1; /* Expands to fill remaining space */
+  margin-left: 70px; /* Leaves space for sidebar */
+  margin-top: 70px; /* Leaves space for header */
+  width: calc(100% - 70px); /* Adjusts width based on sidebar */
   background-color: #f8f9fa;
-  transition: all 0.5s ease;
+  transition: all 0.5s ease; /* Smooth transition on layout changes */
   max-width: 1440px;
 }
 
+/* Adjust layout when sidebar is expanded */
 .mainContainer.sidebarOpen {
-  margin-left: 250px;
+  margin-left: 250px; /* Sidebar is now wider */
   margin-top: 70px;
   width: calc(100% - 250px);
 }
 
+/* Content wrapper for the dashboard area */
 .dashboardContent {
   width: 100%;
   max-width: 1440px;
-  margin: 0 auto;
+  margin: 0 auto; /* Centered horizontally */
   padding: 0 10px;
   background-color: #f8f9fa;
 }
 
+/* Responsive adjustments for tablets and smaller screens */
 @media (max-width: 768px) {
   .mainContainer {
     margin-left: 0;

@@ -1,20 +1,23 @@
+/* Sidebar container positioned on the left */
 .sidebar {
   position: fixed;
   left: 0;
   top: 0;
-  height: 100%;
-  width: var(--sidebar-width);
+  height: 100%; /* Full height of viewport */
+  width: var(--sidebar-width); /* Collapsed width */
   background: var(--background);
   border-right: 1px solid var(--border);
   padding: 6px 14px;
   transition: all var(--transition-speed) ease;
-  z-index: 99;
+  z-index: 99; /* On top of most elements */
 }
 
+/* Expanded sidebar width when .open class is applied */
 .sidebar.open {
   width: var(--sidebar-width-expanded);
 }
 
+/* Header bar at the top of the screen */
 .header {
   position: fixed;
   top: 0;
@@ -26,28 +29,32 @@
   align-items: center;
   justify-content: space-between;
   padding: 0 1.5rem;
-  z-index: 98;
+  z-index: 98; /* Slightly below sidebar */
   transition: all var(--transition-speed) ease;
-  width: calc(100% - var(--sidebar-width));
+  width: calc(100% - var(--sidebar-width)); /* Adjusts to sidebar width */
 }
 
+/* Adjust header width when sidebar is expanded */
 .header.sidebar-open {
   width: calc(100% - var(--sidebar-width-expanded));
 }
 
+/* Navigation list inside the sidebar */
 .nav-list {
   margin-top: 20px;
   height: 100%;
   display: flex;
   flex-direction: column;
-  gap: 5px;
+  gap: 5px; /* Space between items */
 }
 
+/* Each nav item */
 .nav-list li {
   position: relative;
   list-style: none;
 }
 
+/* Anchor link inside nav item */
 .nav-list li a {
   display: flex;
   align-items: center;
@@ -55,43 +62,49 @@
   border-radius: var(--radius);
   padding: 12px;
   color: var(--foreground);
-  white-space: nowrap;
+  white-space: nowrap; /* Prevents text from wrapping */
   transition: all 0.4s ease;
 }
 
+/* Hover and active styles for nav links */
 .nav-list li a:hover,
 .nav-list li a.active {
   background: var(--accent);
   color: var(--accent-foreground);
 }
 
+/* Link name text is hidden by default (collapsed sidebar) */
 .links_name {
   opacity: 0;
   pointer-events: none;
   transition: all 0.3s ease;
 }
 
+/* Show link names when sidebar is expanded */
 .sidebar.open .links_name {
   opacity: 1;
   pointer-events: auto;
   margin-left: 12px;
 }
 
+/* Bottom profile section of the sidebar */
 .profile {
-  margin-top: auto;
+  margin-top: auto; /* Pushes to bottom */
   padding: 12px 0;
   border-top: 1px solid var(--border);
 }
 
+/* Layout for profile image and details */
 .profile-details {
   display: flex;
   align-items: center;
   gap: 12px;
 }
 
+/* Profile image styling */
 .profile-details img {
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  object-fit: cover;
+  object-fit: cover; /* Ensures image fills container */
 }

@@ -1,6 +1,6 @@
-/* Dashboard Module CSS */
+/* Main container for the dashboard layout */
 .dashboardContainer {
-  min-height: calc(100vh - 70px);
+  min-height: calc(100vh - 70px); /* Full height minus header */
   background-color: var(--background-light);
   padding: 1.5rem;
   font-family: 'Inter', 'Roboto', -apple-system, BlinkMacSystemFont, sans-serif;
@@ -9,6 +9,7 @@
   margin: 0 auto;
 }
 
+/* Welcome header block with gradient and shadow styling */
 .welcomeHeader {
   display: flex;
   justify-content: space-between;
@@ -24,6 +25,7 @@
   transition: all 0.4s ease;
 }
 
+/* Animated bar on top of welcome header */
 .welcomeHeader::before {
   content: '';
   position: absolute;
@@ -36,23 +38,23 @@
   animation: gradientFlow 5s linear infinite;
 }
 
+/* Animation for gradient movement */
 @keyframes gradientFlow {
-  0% {
+  0%, 100% {
     background-position: 0% 50%;
   }
   50% {
     background-position: 100% 50%;
   }
-  100% {
-    background-position: 0% 50%;
-  }
 }
 
+/* Hover effect on welcome header */
 .welcomeHeader:hover {
   box-shadow: 0 20px 30px -10px rgba(0, 0, 0, 0.1);
   transform: translateY(-4px);
 }
 
+/* Main title inside welcome header */
 .welcomeTitle {
   font-size: 2.5rem;
   font-weight: 800;
@@ -65,6 +67,7 @@
   position: relative;
 }
 
+/* Underline effect for title */
 .welcomeTitle::after {
   content: '';
   position: absolute;
@@ -76,6 +79,7 @@
   border-radius: 5px;
 }
 
+/* Subtitle below the welcome title */
 .welcomeSubtitle {
   color: var(--text-secondary);
   font-size: 1.125rem;
@@ -83,6 +87,7 @@
   line-height: 1.6;
 }
 
+/* Call-to-action button */
 .ctaButton {
   position: relative;
   padding: 0.9rem 2rem;
@@ -99,6 +104,7 @@
   z-index: 1;
 }
 
+/* Shine effect on button */
 .ctaButton::before {
   content: '';
   position: absolute;
@@ -106,30 +112,25 @@
   left: -100%;
   width: 100%;
   height: 100%;
-  background: linear-gradient(
-    120deg,
-    transparent,
-    rgba(255, 255, 255, 0.3),
-    transparent
-  );
+  background: linear-gradient(120deg, transparent, rgba(255, 255, 255, 0.3), transparent);
   transition: all 0.6s ease;
   z-index: -1;
 }
 
+/* Button hover and active effects */
 .ctaButton:hover {
   transform: translateY(-3px);
   box-shadow: 0 8px 20px rgba(107, 70, 193, 0.4);
 }
-
 .ctaButton:hover::before {
   left: 100%;
 }
-
 .ctaButton:active {
   transform: translateY(1px);
   box-shadow: 0 3px 10px rgba(107, 70, 193, 0.3);
 }
 
+/* Section heading style */
 .sectionHeading {
   font-size: 1.75rem;
   font-weight: 700;
@@ -143,6 +144,7 @@
   position: relative;
 }
 
+/* Underline for section heading */
 .sectionHeading::after {
   content: '';
   position: absolute;
@@ -154,6 +156,7 @@
   border-radius: 5px;
 }
 
+/* General card for informational content */
 .infoCard {
   background: white;
   border-radius: 16px;
@@ -164,11 +167,13 @@
   transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
+/* Hover effect for info card */
 .infoCard:hover {
   transform: translateY(-5px);
   box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
 }
 
+/* Grid layout for feature cards */
 .featureGrid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -177,6 +182,7 @@
   margin-top: 1rem;
 }
 
+/* Individual feature card styling */
 .featureCard {
   display: flex;
   flex-direction: column;
@@ -191,6 +197,7 @@
   transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
+/* Gradient bar that appears on hover */
 .featureCard::before {
   content: '';
   position: absolute;
@@ -203,25 +210,26 @@
   transition: opacity 0.3s ease;
 }
 
+/* Hover transformation for feature card */
 .featureCard:hover {
   transform: translateY(-10px) scale(1.02);
   box-shadow: 0 15px 30px rgba(0, 0, 0, 0.08);
   border-color: rgba(107, 70, 193, 0.3);
 }
-
 .featureCard:hover::before {
   opacity: 1;
 }
 
+/* Feature icon inside a feature card */
 .featureIcon {
   font-size: 3.25rem;
   margin-bottom: 1.5rem;
   text-align: center;
-  display: block;
   position: relative;
   z-index: 1;
 }
 
+/* Background pulse circle for icons */
 .featureIcon::after {
   content: '';
   position: absolute;
@@ -235,13 +243,13 @@
   transform: translate(-50%, -50%);
   transition: all 0.3s ease;
 }
-
 .featureCard:hover .featureIcon::after {
   width: 70px;
   height: 70px;
   background: rgba(159, 122, 234, 0.2);
 }
 
+/* Feature title text */
 .featureTitle {
   background: linear-gradient(45deg, #6b46c1, #9f7aea);
   -webkit-background-clip: text;
@@ -254,6 +262,7 @@
   margin-bottom: 1rem;
 }
 
+/* Feature description text */
 .featureDescription {
   color: var(--text-secondary);
   text-align: center;
@@ -261,6 +270,7 @@
   font-size: 1rem;
 }
 
+/* Horizontal process step container */
 .processContainer {
   display: flex;
   justify-content: space-around;
@@ -270,6 +280,7 @@
   position: relative;
 }
 
+/* Decorative line behind process steps */
 .processContainer::before {
   content: '';
   position: absolute;
@@ -277,17 +288,11 @@
   left: 10%;
   right: 10%;
   height: 2px;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(107, 70, 193, 0.1),
-    rgba(107, 70, 193, 0.2),
-    rgba(107, 70, 193, 0.1),
-    transparent
-  );
+  background: linear-gradient(90deg, transparent, rgba(107, 70, 193, 0.1), rgba(107, 70, 193, 0.2), rgba(107, 70, 193, 0.1), transparent);
   z-index: 0;
 }
 
+/* Each individual process step */
 .processStep {
   text-align: center;
   padding: 1rem;
@@ -296,6 +301,7 @@
   position: relative;
 }
 
+/* Icon used in a process step */
 .processIcon {
   font-size: 2.5rem;
   margin-bottom: 0.75rem;
@@ -303,6 +309,7 @@
   display: inline-block;
 }
 
+/* Background circle for process icon */
 .processIcon::before {
   content: '';
   position: absolute;
@@ -318,11 +325,13 @@
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
 }
 
+/* Label under the process icon */
 .processLabel {
   font-weight: 600;
   color: var(--text-primary);
 }
 
+/* Section with a final call to action */
 .ctaSection {
   background: white;
   border-radius: 16px;
@@ -330,14 +339,11 @@
   margin-top: 2.5rem;
   box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
   text-align: center;
-  background-image: linear-gradient(
-    135deg,
-    rgba(107, 70, 193, 0.05) 0%,
-    rgba(159, 122, 234, 0.05) 100%
-  );
+  background-image: linear-gradient(135deg, rgba(107, 70, 193, 0.05) 0%, rgba(159, 122, 234, 0.05) 100%);
   border: 1px solid rgba(107, 70, 193, 0.1);
 }
 
+/* CTA title text */
 .ctaTitle {
   font-size: 1.75rem;
   font-weight: 700;
@@ -349,6 +355,7 @@
   color: transparent;
 }
 
+/* CTA supporting text */
 .ctaText {
   font-size: 1.1rem;
   line-height: 1.6;
@@ -359,6 +366,7 @@
   margin-right: auto;
 }
 
+/* Grouping buttons together */
 .buttonGroup {
   display: flex;
   justify-content: center;
@@ -366,8 +374,8 @@
   flex-wrap: wrap;
 }
 
+/* Primary CTA button */
 .primaryButton {
-  width: auto;
   min-width: 200px;
   background: linear-gradient(to right, #6b46c1, #9f7aea);
   color: white;
@@ -379,14 +387,15 @@
   box-shadow: 0 8px 15px rgba(107, 70, 193, 0.2);
 }
 
+/* Hover effect */
 .primaryButton:hover {
   opacity: 0.95;
   transform: translateY(-3px);
   box-shadow: 0 12px 20px rgba(107, 70, 193, 0.3);
 }
 
+/* Secondary button with outlined style */
 .secondaryButton {
-  width: auto;
   min-width: 200px;
   background: white;
   color: #6b46c1;
@@ -397,23 +406,22 @@
   transition: all 0.3s ease;
 }
 
+/* Hover effect for secondary button */
 .secondaryButton:hover {
   background: rgba(107, 70, 193, 0.05);
   transform: translateY(-3px);
   box-shadow: 0 8px 15px rgba(0, 0, 0, 0.05);
 }
 
-/* Responsive Styles */
+/* Responsive styles for tablets and mobile */
 @media (max-width: 1280px) {
   .dashboardContainer {
     padding: 1.25rem;
     max-width: 95%;
   }
-
   .welcomeHeader {
     padding: 2rem;
   }
-
   .featureGrid {
     grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
   }
@@ -424,53 +432,40 @@
     padding: 1rem;
     max-width: 100%;
   }
-
   .welcomeHeader {
     flex-direction: column;
     text-align: center;
     padding: 2rem 1.5rem;
     gap: 1.5rem;
   }
-
-  .welcomeTitle::after {
-    left: 50%;
-    transform: translateX(-50%);
-  }
-
-  .welcomeSubtitle {
-    margin: 0 auto;
-  }
-
-  .sectionHeading {
-    display: block;
-    text-align: center;
-  }
-
+  .welcomeTitle::after,
   .sectionHeading::after {
     left: 50%;
     transform: translateX(-50%);
   }
-
+  .welcomeSubtitle {
+    margin: 0 auto;
+  }
+  .sectionHeading {
+    display: block;
+    text-align: center;
+  }
   .featureGrid {
     grid-template-columns: 1fr;
     gap: 1.25rem;
   }
-
   .processContainer::before {
     display: none;
   }
-
   .processContainer {
     flex-direction: column;
     align-items: center;
   }
-
   .buttonGroup {
     flex-direction: column;
     gap: 1rem;
     align-items: center;
   }
-
   .primaryButton,
   .secondaryButton {
     width: 100%;
@@ -478,7 +473,7 @@
   }
 }
 
-/* Animation Styles */
+/* Fade-in animation for scroll/reveal effect */
 @keyframes fadeInUp {
   from {
     opacity: 0;
@@ -489,41 +484,24 @@
     transform: translateY(0);
   }
 }
-
 .animate {
   animation: fadeInUp 0.6s ease forwards;
   opacity: 0;
 }
-
-.delay1 {
-  animation-delay: 0.1s;
-}
-
-.delay2 {
-  animation-delay: 0.2s;
-}
-
-.delay3 {
-  animation-delay: 0.3s;
-}
-
-.delay4 {
-  animation-delay: 0.4s;
-}
+.delay1 { animation-delay: 0.1s; }
+.delay2 { animation-delay: 0.2s; }
+.delay3 { animation-delay: 0.3s; }
+.delay4 { animation-delay: 0.4s; }
 
 /* Pulse animation for icons */
 @keyframes pulse {
-  0% {
+  0%, 100% {
     transform: scale(1);
   }
   50% {
     transform: scale(1.05);
   }
-  100% {
-    transform: scale(1);
-  }
 }
-
 .pulsateIcon {
   animation: pulse 2s infinite ease-in-out;
 }
