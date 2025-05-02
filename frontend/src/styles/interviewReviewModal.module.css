@@ -1,3 +1,4 @@
+/* Fullscreen overlay with dark transparent background and blur */
 .modalOverlay {
   position: fixed;
   inset: 0;
@@ -7,6 +8,7 @@
   animation: fadeIn 0.2s ease-out;
 }
 
+/* Main modal box */
 .modalContent {
   position: fixed;
   top: 50%;
@@ -17,13 +19,16 @@
   max-height: 90vh;
   background: #ffffff;
   border-radius: 28px;
-  box-shadow: 0 24px 38px 3px rgba(0, 0, 0, 0.14),
-    0 9px 46px 8px rgba(0, 0, 0, 0.12), 0 11px 15px -7px rgba(0, 0, 0, 0.2);
+  box-shadow: /* Material-style elevation */
+    0 24px 38px 3px rgba(0, 0, 0, 0.14),
+    0 9px 46px 8px rgba(0, 0, 0, 0.12),
+    0 11px 15px -7px rgba(0, 0, 0, 0.2);
   z-index: 1000;
   overflow: hidden;
   animation: modalSlideIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
+/* Gradient header of modal */
 .modalHeader {
   background: linear-gradient(135deg, #6b46c1, #9f7aea);
   padding: 1.25rem 2rem;
@@ -32,6 +37,7 @@
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
 }
 
+/* Main modal title */
 .modalTitle {
   font-size: 1.25rem;
   font-weight: 600;
@@ -39,12 +45,14 @@
   color: white;
 }
 
+/* Subtitle or description text */
 .modalDescription {
   color: rgba(255, 255, 255, 0.9);
   font-size: 0.875rem;
   font-weight: 400;
 }
 
+/* Scrollable modal body */
 .modalBody {
   padding: 1.5rem;
   overflow-y: auto;
@@ -53,6 +61,7 @@
   scrollbar-color: #6b46c1 #f0f0f0;
 }
 
+/* WebKit scrollbar styling */
 .modalBody::-webkit-scrollbar {
   width: 6px;
 }
@@ -67,14 +76,15 @@
   border-radius: 3px;
 }
 
+/* Individual question card */
 .questionCard {
   background: white;
   border: 1px solid #e5e7eb;
   border-radius: 16px;
   margin-bottom: 1rem;
+  padding: 1.5rem;
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0, 0, 0, 0.1);
-  padding: 1.5rem;
 }
 
 .questionCard:hover {
@@ -84,6 +94,7 @@
   border-color: #6b46c1;
 }
 
+/* Header within each card */
 .cardHeader {
   display: flex;
   justify-content: space-between;
@@ -91,6 +102,7 @@
   margin-bottom: 1rem;
 }
 
+/* Card title text */
 .cardTitle {
   font-size: 1.125rem;
   font-weight: 600;
@@ -99,6 +111,7 @@
   margin: 0;
 }
 
+/* Question/Answer block */
 .questionSection {
   background: #f8f9fa;
   border-radius: 12px;
@@ -114,6 +127,7 @@
   background: #f3f4f6;
 }
 
+/* Section header text with optional icon */
 .sectionTitle {
   font-size: 0.875rem;
   font-weight: 600;
@@ -123,12 +137,14 @@
   align-items: center;
 }
 
+/* Optional icon before section title */
 .sectionIcon {
   margin-right: 0.75rem;
   color: #6b46c1;
   flex-shrink: 0;
 }
 
+/* Answer or explanation content */
 .sectionContent {
   color: #4b5563;
   line-height: 1.5;
@@ -136,6 +152,7 @@
   margin-left: 1.75rem;
 }
 
+/* Indicators for user feedback */
 .likeIndicator,
 .dislikeIndicator {
   display: flex;
@@ -147,12 +164,14 @@
   border-radius: 9999px;
 }
 
+/* Green like feedback */
 .likeIndicator {
   background-color: #ecfdf5;
   color: #047857;
   border: 1px solid #a7f3d0;
 }
 
+/* Red dislike feedback */
 .dislikeIndicator {
   background-color: #fef2f2;
   color: #b91c1c;
@@ -163,6 +182,7 @@
   flex-shrink: 0;
 }
 
+/* User rating block below sections */
 .feedbackRating {
   display: flex;
   align-items: center;
@@ -179,6 +199,7 @@
   margin: 0;
 }
 
+/* Top-right close icon button */
 .closeButton {
   position: absolute;
   top: 1rem;
@@ -205,6 +226,7 @@
   transform: scale(0.95);
 }
 
+/* Feedback section (e.g., past reviews) */
 .feedbackSection {
   margin-top: 2rem;
   padding-top: 1.5rem;
@@ -218,6 +240,7 @@
   margin-bottom: 1rem;
 }
 
+/* Past feedback card */
 .feedbackCard {
   background: white;
   border: 1px solid #e5e7eb;
@@ -226,6 +249,7 @@
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
+/* Star rating layout */
 .feedbackRatingStars {
   display: flex;
   align-items: center;
@@ -239,20 +263,24 @@
   margin: 0;
 }
 
+/* Star icons layout */
 .starRating {
   display: flex;
   gap: 0.25rem;
 }
 
+/* Inactive star icon */
 .star {
   font-size: 1.25rem;
   color: #d1d5db;
 }
 
+/* Highlighted active star */
 .starActive {
   color: #f59e0b;
 }
 
+/* Written feedback content */
 .feedbackContent {
   color: #4b5563;
   line-height: 1.6;
@@ -260,6 +288,7 @@
   white-space: pre-wrap;
 }
 
+/* Timestamp for feedback */
 .feedbackDate {
   color: #6b7280;
   font-size: 0.75rem;
@@ -267,15 +296,13 @@
   margin: 0;
 }
 
+/* Simple fade-in animation */
 @keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
+/* Slide-in modal with scale and fade */
 @keyframes modalSlideIn {
   from {
     opacity: 0;
@@ -287,6 +314,7 @@
   }
 }
 
+/* Mobile-friendly adjustments */
 @media (max-width: 768px) {
   .modalContent {
     width: 95vw;

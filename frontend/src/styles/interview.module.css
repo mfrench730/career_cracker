@@ -1,4 +1,5 @@
 :root {
+  /* Core Colors and Theme Variables */
   --primary-color: #1a73e8;
   --secondary-color: #34a853;
   --text-primary: #202124;
@@ -7,6 +8,7 @@
   --border-color: #dadce0;
 }
 
+/* Main container for the interview page */
 .interviewContainer {
   min-height: calc(100vh - 70px);
   background-color: var(--background-light);
@@ -17,6 +19,7 @@
   margin: 0 auto;
 }
 
+/* Header section with gradient background and spacing */
 .header {
   display: flex;
   justify-content: space-between;
@@ -32,6 +35,7 @@
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.08);
 }
 
+/* Gradient-styled button in the header */
 .headerButton {
   position: relative;
   padding: 0.75rem 1.5rem;
@@ -47,6 +51,7 @@
   transition: all 0.3s ease;
 }
 
+/* Shine animation effect */
 .headerButton::before {
   content: '';
   position: absolute;
@@ -54,12 +59,7 @@
   left: -100%;
   width: 100%;
   height: 100%;
-  background: linear-gradient(
-    120deg,
-    transparent,
-    rgba(255, 255, 255, 0.3),
-    transparent
-  );
+  background: linear-gradient(120deg, transparent, rgba(255, 255, 255, 0.3), transparent);
   transition: all 0.6s ease;
 }
 
@@ -72,6 +72,30 @@
   left: 100%;
 }
 
+.headerButton:active {
+  transform: translateY(1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Title styling with gradient text */
+.pageTitle {
+  font-size: 2rem;
+  font-weight: 700;
+  background: linear-gradient(45deg, #6b46c1, #9f7aea);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  margin-bottom: 0.5rem;
+}
+
+/* Subtitle below title */
+.pageSubtitle {
+  color: var(--text-secondary);
+  font-size: 1rem;
+}
+
+/* Responsive interview card layout */
 .interviewGrid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
@@ -80,35 +104,7 @@
   justify-content: center;
 }
 
-.headerButton:active {
-  transform: translateY(1px);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.pageTitle {
-  font-size: 2rem;
-  font-weight: 700;
-  background: linear-gradient(45deg, #6b46c1, #9f7aea);
-  -webkit-background-clip: text; /* For WebKit browsers */
-  background-clip: text;          /* Standard syntax (future-proof) */
-  -webkit-text-fill-color: transparent; /* Makes the text background visible */
-  color: transparent; /* Also add this for extra safety */
-  margin-bottom: 0.5rem;
-}
-
-
-.pageSubtitle {
-  color: var(--text-secondary);
-  font-size: 1rem;
-}
-
-.interviewGrid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-  gap: 1.5rem;
-  width: 100%;
-}
-
+/* Card container for each interview */
 .interviewCard {
   display: flex;
   flex-direction: column;
@@ -122,24 +118,30 @@
   max-height: 400px;
   position: relative;
   justify-content: space-between;
+  animation: fadeIn 0.5s ease forwards;
+  opacity: 0;
+  animation-delay: calc(var(--index) * 0.1s);
 }
 
+/* Hover effect for cards */
 .interviewCard:hover {
   transform: translateY(-8px);
   box-shadow: 0 12px 20px rgba(0, 0, 0, 0.08);
   border-color: var(--primary-color);
 }
 
+/* Card title with gradient text */
 .cardTitle {
   background: linear-gradient(45deg, #6b46c1, #9f7aea);
-  -webkit-background-clip: text; /* WebKit browsers */
-  background-clip: text;          /* Standard syntax */
-  -webkit-text-fill-color: transparent; /* Make text transparent */
-  color: transparent;             /* Optional but safer */
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
   font-weight: 600;
   font-size: 1.125rem;
 }
 
+/* Info sections inside cards */
 .progressInfo,
 .timeInfo {
   display: flex;
@@ -158,6 +160,7 @@
   margin-bottom: 0.5rem;
 }
 
+/* Text preview of last question */
 .lastQuestion {
   color: var(--text-primary);
   font-weight: 500;
@@ -172,11 +175,13 @@
   line-height: 1.5;
 }
 
+/* Container for the bottom of the card */
 .cardFooter {
   margin-top: auto;
   width: 100%;
 }
 
+/* Primary review button inside card */
 .reviewButton {
   width: 100%;
   background: linear-gradient(to right, #6b46c1, #9f7aea);
@@ -200,6 +205,7 @@
   cursor: not-allowed;
 }
 
+/* Smaller feedback link-style button */
 .feedbackSmallButton {
   font-size: 0.875rem;
   font-weight: 500;
@@ -223,6 +229,7 @@
   outline-offset: 2px;
 }
 
+/* Controls for pagination at the bottom */
 .paginationControls {
   display: flex;
   justify-content: flex-end;
@@ -230,6 +237,7 @@
   margin-top: 2rem;
 }
 
+/* Pagination navigation buttons */
 .paginationButton {
   padding: 0.6rem 1.25rem;
   background: linear-gradient(135deg, #6b46c1, #9f7aea);
@@ -256,6 +264,7 @@
   transform: none;
 }
 
+/* Tablet responsiveness */
 @media (max-width: 1280px) {
   .interviewContainer {
     padding: 1rem;
@@ -267,6 +276,7 @@
   }
 }
 
+/* Mobile responsiveness */
 @media (max-width: 768px) {
   .interviewContainer {
     padding: 0.5rem;
@@ -279,12 +289,14 @@
   }
 }
 
+/* Print-friendly override */
 @media print {
   .interviewContainer {
     background: white;
   }
 }
 
+/* Fade-in animation for cards */
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -295,10 +307,3 @@
     transform: translateY(0);
   }
 }
-
-.interviewCard {
-  animation: fadeIn 0.5s ease forwards;
-  opacity: 0;
-  animation-delay: calc(var(--index) * 0.1s);
-}
-
