@@ -1,9 +1,11 @@
+// Define the expected response structure for auth endpoints
 interface AuthResponse {
   token?: string
   error?: string
 }
 
 export const authApi = {
+  // Sends login request to backend with username and password
   login: async (username: string, password: string): Promise<AuthResponse> => {
     try {
       const response = await fetch(
@@ -24,6 +26,7 @@ export const authApi = {
     }
   },
 
+  // Sends sign-up request to backend with required user fields
   signUp: async (
     username: string,
     email: string,

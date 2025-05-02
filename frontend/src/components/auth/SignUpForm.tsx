@@ -5,11 +5,13 @@ interface SignUpFormProps {
   isLoading: boolean;
 }
 
+// Form component to collect sign-up info
 const SignUpForm: React.FC<SignUpFormProps> = ({ onSubmit, isLoading }) => {
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
+  // Handle form submission
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     await onSubmit(username, email, password);
@@ -17,6 +19,7 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ onSubmit, isLoading }) => {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
+      {/* Username Input */}
       <input
         type="text"
         value={username}
@@ -25,6 +28,7 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ onSubmit, isLoading }) => {
         disabled={isLoading}
         className="w-full p-2 border rounded"
       />
+      {/* Email Input */}
       <input
         type="email"
         value={email}
@@ -33,6 +37,7 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ onSubmit, isLoading }) => {
         disabled={isLoading}
         className="w-full p-2 border rounded"
       />
+      {/* Password Input */}
       <input
         type="password"
         value={password}
@@ -41,6 +46,7 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ onSubmit, isLoading }) => {
         disabled={isLoading}
         className="w-full p-2 border rounded"
       />
+      {/* Submit Button */}
       <button
         type="submit"
         disabled={isLoading}

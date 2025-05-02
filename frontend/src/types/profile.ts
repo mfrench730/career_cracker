@@ -11,4 +11,4 @@ export interface UserProfile {
   target_job_title: string | null
 }
 
-export type UpdateProfileData = Partial<Omit<UserProfile, 'username' | 'email'>>
+export type UpdateProfileData = Partial<Omit<UserProfile, 'username' | 'email'>> //Allows all properties to be updated except username and email

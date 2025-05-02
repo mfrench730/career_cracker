@@ -5,10 +5,12 @@ interface SignInFormProps {
   isLoading: boolean;
 }
 
+// Form component to collect username and password
 const SignInForm: React.FC<SignInFormProps> = ({ onSubmit, isLoading }) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
 
+  // Handle form submit
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     await onSubmit(username, password);
@@ -16,6 +18,7 @@ const SignInForm: React.FC<SignInFormProps> = ({ onSubmit, isLoading }) => {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
+      {/* Username Input */}
       <input
         type="text"
         value={username}
@@ -24,6 +27,7 @@ const SignInForm: React.FC<SignInFormProps> = ({ onSubmit, isLoading }) => {
         disabled={isLoading}
         className="w-full p-2 border rounded"
       />
+      {/* Password Input */}
       <input
         type="password"
         value={password}
@@ -32,6 +36,7 @@ const SignInForm: React.FC<SignInFormProps> = ({ onSubmit, isLoading }) => {
         disabled={isLoading}
         className="w-full p-2 border rounded"
       />
+      {/* Submit Button */}
       <button
         type="submit"
         disabled={isLoading}
