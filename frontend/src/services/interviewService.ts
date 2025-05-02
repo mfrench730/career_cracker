@@ -1,4 +1,7 @@
+// Import axios for HTTP requests and AxiosError for error typing
 import axios, { AxiosError } from 'axios'
+
+// Import relevant TypeScript types for interview data
 import {
   InterviewQuestion,
   InterviewFeedback,
@@ -7,16 +10,19 @@ import {
   QuestionRating,
 } from '../types/interview'
 
+// Service class to handle all interview-related API interactions
 class InterviewService {
+  // Create an Axios instance with default configuration
   private apiClient = axios.create({
-    baseURL: '/api',
+    baseURL: '/api', // Base URL for API endpoints
     headers: {
       'Content-Type': 'application/json',
     },
-    withCredentials: true,
+    withCredentials: true, // Include cookies (if needed)
   })
 
   constructor() {
+    // Intercept each request to add the JWT token to headers if available
     this.apiClient.interceptors.request.use(
       (config) => {
         const token = localStorage.getItem('token')
@@ -25,12 +31,11 @@ class InterviewService {
         }
         return config
       },
-      (error) => {
-        return Promise.reject(error)
-      }
+      (error) => Promise.reject(error)
     )
   }
 
+  // Handles and standardizes error logging and formatting
   private handleError(error: unknown) {
     if (axios.isAxiosError(error)) {
       const axiosError = error as AxiosError<{
@@ -50,6 +55,7 @@ class InterviewService {
     throw new Error('An unexpected error occurred')
   }
 
+  // Start a new interview session
   async startInterview(): Promise<InterviewSession> {
     try {
       console.log('Starting interview...')
@@ -62,14 +68,11 @@ class InterviewService {
       return response.data
     } catch (error) {
       console.error('Error starting interview:', error)
-      if (axios.isAxiosError(error)) {
-        console.error('Response:', error.response)
-        console.error('Request:', error.request)
-      }
       throw this.handleError(error)
     }
   }
 
+  // Get the next interview question
   async getNextQuestion(): Promise<InterviewQuestion> {
     try {
       const response = await this.apiClient.get<InterviewQuestion>(
@@ -82,6 +85,7 @@ class InterviewService {
     }
   }
 
+  // Submit a response to a question in the current session
   async submitResponse(
     sessionId: number,
     questionId: number,
@@ -99,6 +103,7 @@ class InterviewService {
     }
   }
 
+  // Complete the current interview session
   async completeInterview(sessionId: number): Promise<void> {
     try {
       await this.apiClient.post(`/interviews/${sessionId}/complete/`)
@@ -108,6 +113,7 @@ class InterviewService {
     }
   }
 
+  // Fetch paginated list of past interviews
   async getPastInterviews(
     page = 1,
     limit = 10
@@ -128,6 +134,7 @@ class InterviewService {
     }
   }
 
+  // Rate a specific question from an interview
   async rateQuestion(
     questionId: number,
     interviewId: number,
@@ -149,6 +156,7 @@ class InterviewService {
     }
   }
 
+  // Submit general feedback for an interview session
   async submitFeedback(
     interviewId: number,
     content: string,
@@ -169,6 +177,7 @@ class InterviewService {
     }
   }
 
+  // Retrieve a rating for a specific question in an interview
   async getQuestionRating(
     questionId: number,
     interviewId: number
@@ -186,9 +195,10 @@ class InterviewService {
       return response.data
     } catch (error) {
       console.error('Error fetching question rating:', error)
-      return null
+      return null // Gracefully handle error by returning null
     }
   }
 }
 
+// Export a singleton instance of the InterviewService
 export const interviewService = new InterviewService()
