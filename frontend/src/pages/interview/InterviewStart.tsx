@@ -1,3 +1,5 @@
+// This component handles the interview dashboard UI
+// Users can start new interviews, view previous sessions, and give feedback
 import React, { useState, useCallback, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardFooter } from '@/components/ui/card'
@@ -11,8 +13,7 @@ import { PastInterview } from '@/types/interview'
 import JobTitleModal from '@/components/interview/JobTitleModal'
 import { updateUserProfile } from '@/services/accountService'
 
-
-
+// Main functional component
 const InterviewStart: React.FC = () => {
   const {
     startInterview,
@@ -24,16 +25,14 @@ const InterviewStart: React.FC = () => {
     totalInterviews,
   } = useInterview()
 
+  // State to manage modal visibility and selections
   const [selectedInterviewId, setSelectedInterviewId] = useState<number | null>(
     null
   )
   const [isNewInterviewOpen, setIsNewInterviewOpen] = useState(false)
   const [isStartingInterview, setIsStartingInterview] = useState(false)
   const [isFeedbackModalOpen, setIsFeedbackModalOpen] = useState(false)
-
   const [isJobTitleModalOpen, setIsJobTitleModalOpen] = useState(false)
-
-
   const [feedbackInterviewId, setFeedbackInterviewId] = useState<number | null>(
     null
   )
@@ -41,6 +40,7 @@ const InterviewStart: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1)
   const limit = 12
 
+  // Load past interviews when page loads or pagination changes
   useEffect(() => {
     const loadInterviews = async () => {
       try {
@@ -52,6 +52,7 @@ const InterviewStart: React.FC = () => {
     loadInterviews()
   }, [fetchPastInterviews, currentPage])
 
+  // Opens modal to review a selected interview
   const handleReviewInterview = useCallback((interviewId: number) => {
     setSelectedInterviewId(interviewId)
   }, [])
@@ -60,39 +61,43 @@ const InterviewStart: React.FC = () => {
     setSelectedInterviewId(null)
   }, [])
 
+  // Starts new interview - first shows job title modal
   const handleStartInterview = useCallback(() => {
     setIsJobTitleModalOpen(true)
   }, [])
-  
-  
 
+  // Refreshes past interviews after a new one is created
   const handleCloseNewInterview = useCallback(() => {
     setIsNewInterviewOpen(false)
     fetchPastInterviews(currentPage, limit).catch(console.error)
   }, [fetchPastInterviews, currentPage])
 
-  const handleConfirmJobTitle = useCallback(async (newJobTitle?: string) => {
-    setIsJobTitleModalOpen(false)
-    setIsStartingInterview(true)
-  
-    try {
-      if (newJobTitle) {
-        await updateUserProfile({ target_job_title: newJobTitle })
+  // Confirms job title and starts interview
+  const handleConfirmJobTitle = useCallback(
+    async (newJobTitle?: string) => {
+      setIsJobTitleModalOpen(false)
+      setIsStartingInterview(true)
+
+      try {
+        if (newJobTitle) {
+          await updateUserProfile({ target_job_title: newJobTitle })
+        }
+        await startInterview()
+        setIsNewInterviewOpen(true)
+      } catch (error) {
+        console.error('Failed to start interview:', error)
+      } finally {
+        setIsStartingInterview(false)
       }
-      await startInterview()
-      setIsNewInterviewOpen(true)
-    } catch (error) {
-      console.error('Failed to start interview:', error)
-    } finally {
-      setIsStartingInterview(false)
-    }
-  }, [startInterview])
-  
-  
+    },
+    [startInterview]
+  )
+
+  // Skips job title input and starts interview directly
   const handleSkipJobTitle = useCallback(async () => {
     setIsJobTitleModalOpen(false)
     setIsStartingInterview(true)
-  
+
     try {
       await startInterview()
       setIsNewInterviewOpen(true)
@@ -102,9 +107,8 @@ const InterviewStart: React.FC = () => {
       setIsStartingInterview(false)
     }
   }, [startInterview])
-  
 
-
+  // Opens feedback modal for a completed interview
   const handleOpenFeedbackModal = useCallback((interviewId: number) => {
     setFeedbackInterviewId(interviewId)
     setIsFeedbackModalOpen(true)
@@ -115,6 +119,7 @@ const InterviewStart: React.FC = () => {
     setFeedbackInterviewId(null)
   }, [])
 
+  // Submits final feedback from user
   const handleSubmitFeedback = useCallback(
     async (feedback: { content: string; rating: number }) => {
       if (!feedbackInterviewId) return
@@ -134,6 +139,7 @@ const InterviewStart: React.FC = () => {
     [feedbackInterviewId, submitFeedback, fetchPastInterviews, currentPage]
   )
 
+  // Renders a single interview card with details and actions
   const renderInterviewCard = (interview: PastInterview, index: number) => {
     if (!interview) return null
 
@@ -161,6 +167,7 @@ const InterviewStart: React.FC = () => {
         <CardContent>
           <div className="space-y-4">
             <div>
+              {/* Summary: total answered, time completed, rating */}
               <div
                 className={`flex justify-between text-sm text-muted-foreground ${styles.progressInfo}`}
               >
@@ -188,6 +195,7 @@ const InterviewStart: React.FC = () => {
                 </div>
               )}
             </div>
+
             {lastAnswer && (
               <div className="text-sm">
                 <p className="font-medium">Last Question:</p>
@@ -222,8 +230,10 @@ const InterviewStart: React.FC = () => {
 
   const totalPages = Math.max(1, Math.ceil(totalInterviews / limit))
 
+  // Main render output
   return (
     <div className={`space-y-4 ${styles.interviewContainer}`}>
+      {/* Header Section */}
       <div
         className={`flex justify-between items-center mb-6 ${styles.header}`}
       >
@@ -248,10 +258,12 @@ const InterviewStart: React.FC = () => {
         </Button>
       </div>
 
+      {/* Error display */}
       {error && (
         <div className="text-red-500 p-4 rounded bg-red-50">Error: {error}</div>
       )}
 
+      {/* Grid of past interviews */}
       <div
         className={`grid gap-4 md:grid-cols-2 lg:grid-cols-3 ${styles.interviewGrid}`}
       >
@@ -270,6 +282,7 @@ const InterviewStart: React.FC = () => {
         )}
       </div>
 
+      {/* Pagination buttons */}
       <div className={styles.paginationControls}>
         <Button
           className={styles.paginationButton}
@@ -288,6 +301,7 @@ const InterviewStart: React.FC = () => {
         </Button>
       </div>
 
+      {/* Modals for review, feedback, and new interviews */}
       {selectedInterviewId !== null && (
         <InterviewReviewModal
           isOpen={true}

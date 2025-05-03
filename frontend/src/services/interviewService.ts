@@ -1,4 +1,5 @@
 import axios, { AxiosError } from 'axios'
+// Import types used in the API responses
 import {
   InterviewQuestion,
   InterviewFeedback,
@@ -8,15 +9,17 @@ import {
 } from '../types/interview'
 
 class InterviewService {
+  // Setup axios instance for API calls with default settings
   private apiClient = axios.create({
-    baseURL: '/api',
+    baseURL: '/api', // All requests will start with this base URL
     headers: {
       'Content-Type': 'application/json',
     },
-    withCredentials: true,
+    withCredentials: true, // Allow sending cookies with requests
   })
 
   constructor() {
+    // Add an interceptor to attach the auth token to every request
     this.apiClient.interceptors.request.use(
       (config) => {
         const token = localStorage.getItem('token')
@@ -25,12 +28,11 @@ class InterviewService {
         }
         return config
       },
-      (error) => {
-        return Promise.reject(error)
-      }
+      (error) => Promise.reject(error)
     )
   }
 
+  // Handles API errors and logs useful info
   private handleError(error: unknown) {
     if (axios.isAxiosError(error)) {
       const axiosError = error as AxiosError<{
@@ -50,6 +52,7 @@ class InterviewService {
     throw new Error('An unexpected error occurred')
   }
 
+  // Starts a new interview session
   async startInterview(): Promise<InterviewSession> {
     try {
       console.log('Starting interview...')
@@ -70,6 +73,7 @@ class InterviewService {
     }
   }
 
+  // Gets the next question from the server
   async getNextQuestion(): Promise<InterviewQuestion> {
     try {
       const response = await this.apiClient.get<InterviewQuestion>(
@@ -82,6 +86,7 @@ class InterviewService {
     }
   }
 
+  // Sends user's response to a question
   async submitResponse(
     sessionId: number,
     questionId: number,
@@ -99,6 +104,7 @@ class InterviewService {
     }
   }
 
+  // Completes the current interview session
   async completeInterview(sessionId: number): Promise<void> {
     try {
       await this.apiClient.post(`/interviews/${sessionId}/complete/`)
@@ -108,6 +114,7 @@ class InterviewService {
     }
   }
 
+  // Fetches list of past interviews with pagination support
   async getPastInterviews(
     page = 1,
     limit = 10
@@ -128,6 +135,7 @@ class InterviewService {
     }
   }
 
+  // Lets the user rate a question as helpful or not
   async rateQuestion(
     questionId: number,
     interviewId: number,
@@ -149,6 +157,7 @@ class InterviewService {
     }
   }
 
+  // Submits final feedback at the end of the interview
   async submitFeedback(
     interviewId: number,
     content: string,
@@ -169,6 +178,7 @@ class InterviewService {
     }
   }
 
+  // Gets the user's past rating for a specific question if available
   async getQuestionRating(
     questionId: number,
     interviewId: number
@@ -191,4 +201,5 @@ class InterviewService {
   }
 }
 
+// Export a single instance of the service
 export const interviewService = new InterviewService()

@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useCallback } from 'react'
+// Types used in this context
 import {
   InterviewSession,
   InterviewQuestion,
@@ -6,8 +7,10 @@ import {
   PastInterview,
   QuestionRating,
 } from '../types/interview'
+// Service that talks to the backend
 import { interviewService } from '../services/interviewService'
 
+// This defines all the data and functions available in the context
 interface InterviewContextType {
   currentSession: InterviewSession | null
   currentQuestion: InterviewQuestion | null
@@ -40,13 +43,16 @@ interface InterviewContextType {
   ) => Promise<QuestionRating | null>
 }
 
+// Create the InterviewContext with no default value
 const InterviewContext = createContext<InterviewContextType | undefined>(
   undefined
 )
 
+// Context provider that wraps your app
 export const InterviewProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
+  // State variables to store current session, current question, list of past interviews, etc.
   const [currentSession, setCurrentSession] = useState<InterviewSession | null>(
     null
   )
@@ -57,16 +63,19 @@ export const InterviewProvider: React.FC<{ children: React.ReactNode }> = ({
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
+  // Clears any existing error messages
   const clearError = useCallback(() => {
     setError(null)
   }, [])
 
+  // Resets the interview session state
   const resetInterview = useCallback(() => {
     setCurrentSession(null)
     setCurrentQuestion(null)
     setError(null)
   }, [])
 
+  // Handles and sets error messages
   const handleError = useCallback((error: unknown) => {
     const message =
       error instanceof Error ? error.message : 'An unexpected error occurred'
@@ -74,6 +83,7 @@ export const InterviewProvider: React.FC<{ children: React.ReactNode }> = ({
     throw error
   }, [])
 
+  // Loads past interview data (with optional pagination)
   const fetchPastInterviews = useCallback(
     async (page = 1, limit = 10) => {
       setIsLoading(true)
@@ -94,10 +104,9 @@ export const InterviewProvider: React.FC<{ children: React.ReactNode }> = ({
     [handleError]
   )
 
+  // Ends the current interview session and updates the past interview list
   const completeInterview = useCallback(async () => {
-    if (!currentSession) {
-      throw new Error('No active interview session')
-    }
+    if (!currentSession) throw new Error('No active interview session')
 
     setIsLoading(true)
     setError(null)
@@ -105,7 +114,6 @@ export const InterviewProvider: React.FC<{ children: React.ReactNode }> = ({
       await interviewService.completeInterview(currentSession.id)
       setCurrentSession(null)
       setCurrentQuestion(null)
-
       await fetchPastInterviews()
     } catch (error) {
       handleError(error)
@@ -114,10 +122,9 @@ export const InterviewProvider: React.FC<{ children: React.ReactNode }> = ({
     }
   }, [currentSession, handleError, fetchPastInterviews])
 
+  // Gets the next question in the interview
   const getNextQuestion = useCallback(async () => {
-    if (!currentSession) {
-      throw new Error('No active interview session')
-    }
+    if (!currentSession) throw new Error('No active interview session')
 
     setIsLoading(true)
     setError(null)
@@ -139,6 +146,7 @@ export const InterviewProvider: React.FC<{ children: React.ReactNode }> = ({
     }
   }, [currentSession, handleError, completeInterview])
 
+  // Starts a new interview session and loads the first question
   const startInterview = useCallback(async () => {
     setIsLoading(true)
     setError(null)
@@ -158,10 +166,9 @@ export const InterviewProvider: React.FC<{ children: React.ReactNode }> = ({
     }
   }, [handleError])
 
+  // Skips the current question and loads the next one
   const skipQuestion = useCallback(async () => {
-    if (!currentSession) {
-      throw new Error('No active interview session')
-    }
+    if (!currentSession) throw new Error('No active interview session')
 
     setIsLoading(true)
     try {
@@ -181,6 +188,7 @@ export const InterviewProvider: React.FC<{ children: React.ReactNode }> = ({
     }
   }, [currentSession, handleError, completeInterview])
 
+  // Sends user's answer to the current question and returns AI feedback
   const submitResponse = useCallback(
     async (response: string): Promise<InterviewFeedback> => {
       if (!currentSession || !currentQuestion) {
@@ -206,6 +214,7 @@ export const InterviewProvider: React.FC<{ children: React.ReactNode }> = ({
     [currentSession, currentQuestion, handleError]
   )
 
+  // Submits user rating (LIKE / DISLIKE) for a question
   const rateQuestion = useCallback(
     async (
       questionId: number,
@@ -231,6 +240,7 @@ export const InterviewProvider: React.FC<{ children: React.ReactNode }> = ({
     [handleError]
   )
 
+  // Submits final feedback after the interview ends
   const submitFeedback = useCallback(
     async (
       interviewId: number,
@@ -245,9 +255,7 @@ export const InterviewProvider: React.FC<{ children: React.ReactNode }> = ({
           content,
           rating
         )
-
         await fetchPastInterviews()
-
         return result
       } catch (error) {
         handleError(error)
@@ -259,6 +267,7 @@ export const InterviewProvider: React.FC<{ children: React.ReactNode }> = ({
     [handleError, fetchPastInterviews]
   )
 
+  // Fetches the user's past rating for a specific question (optional helper)
   const getQuestionRating = useCallback(
     async (
       questionId: number,
@@ -274,6 +283,7 @@ export const InterviewProvider: React.FC<{ children: React.ReactNode }> = ({
     []
   )
 
+  // Pack all values/functions into a single object to pass to the provider
   const value = {
     currentSession,
     currentQuestion,
@@ -301,6 +311,7 @@ export const InterviewProvider: React.FC<{ children: React.ReactNode }> = ({
   )
 }
 
+// Custom hook to use the interview context
 export const useInterview = () => {
   const context = useContext(InterviewContext)
   if (context === undefined) {
