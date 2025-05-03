@@ -1,420 +1,402 @@
-/* Profile Module CSS - Based on Dashboard Module CSS */
+/* Container for the profile/dashboard area */
 .dashboardContainer {
-    min-height: calc(100vh - 70px);
-    background-color: var(--background-light, #f8fafc);
-    padding: 1.5rem;
-    font-family: 'Inter', 'Roboto', -apple-system, BlinkMacSystemFont, sans-serif;
-    max-width: 1440px;
-    width: 100%;
-    margin: 0 auto;
+  min-height: calc(100vh - 70px); /* Full viewport minus header */
+  background-color: var(--background-light, #f8fafc);
+  padding: 1.5rem;
+  font-family: 'Inter', 'Roboto', sans-serif;
+  max-width: 1440px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+/* Welcome header with gradient background and animated bar */
+.welcomeHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: linear-gradient(135deg, #f8f9fa, #edf2f7);
+  border-radius: 1.5rem;
+  padding: 2.5rem;
+  margin-bottom: 2.5rem;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(107, 70, 193, 0.1);
+  transition: all 0.4s ease;
+}
+
+/* Animated bar at the top of welcome header */
+.welcomeHeader::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #6b46c1, #9f7aea, #6b46c1);
+  background-size: 200% 100%;
+  animation: gradientFlow 5s linear infinite;
+}
+
+/* Keyframe for animated gradient flow */
+@keyframes gradientFlow {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* On hover, lift the welcome box */
+.welcomeHeader:hover {
+  box-shadow: 0 20px 30px -10px rgba(0, 0, 0, 0.1);
+  transform: translateY(-4px);
+}
+
+/* Bold, gradient-filled title */
+.welcomeTitle {
+  font-size: 2.5rem;
+  font-weight: 800;
+  background: linear-gradient(45deg, #6b46c1, #9f7aea);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  margin-bottom: 0.75rem;
+  position: relative;
+}
+
+/* Decorative underline for title */
+.welcomeTitle::after {
+  content: '';
+  position: absolute;
+  bottom: -8px;
+  left: 0;
+  width: 80px;
+  height: 3px;
+  background: linear-gradient(90deg, #6b46c1, transparent);
+  border-radius: 5px;
+}
+
+/* Lighter subtitle under the title */
+.welcomeSubtitle {
+  color: var(--text-secondary, #64748b);
+  font-size: 1.125rem;
+  max-width: 600px;
+  line-height: 1.6;
+}
+
+/* Big call-to-action button */
+.ctaButton {
+  position: relative;
+  padding: 0.9rem 2rem;
+  background: linear-gradient(135deg, #6b46c1, #9f7aea);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.75px;
+  box-shadow: 0 4px 15px rgba(107, 70, 193, 0.3);
+  overflow: hidden;
+  transition: all 0.4s ease;
+  z-index: 1;
+  cursor: pointer;
+}
+
+/* Shine animation on hover */
+.ctaButton::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(120deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  transition: all 0.6s ease;
+  z-index: -1;
+}
+
+.ctaButton:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(107, 70, 193, 0.4);
+}
+
+.ctaButton:hover::before {
+  left: 100%;
+}
+
+.ctaButton:active {
+  transform: translateY(1px);
+  box-shadow: 0 3px 10px rgba(107, 70, 193, 0.3);
+}
+
+/* Headings for each section below welcome */
+.sectionHeading {
+  font-size: 1.75rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+  background: linear-gradient(45deg, #6b46c1, #9f7aea);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  display: inline-block;
+  position: relative;
+}
+
+.sectionHeading::after {
+  content: '';
+  position: absolute;
+  bottom: -8px;
+  left: 0;
+  width: 40%;
+  height: 3px;
+  background: linear-gradient(90deg, #6b46c1, transparent);
+  border-radius: 5px;
+}
+
+/* Card container for profile details/info */
+.infoCard {
+  background: white;
+  border-radius: 16px;
+  padding: 2rem;
+  margin-bottom: 2.5rem;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+  border: 1px solid var(--border-color, #e2e8f0);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.infoCard:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+}
+
+/* Profile info section */
+.profileDetails {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* Row layout for profile fields */
+.profileRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
+}
+
+/* Individual profile item box */
+.profileField {
+  flex: 1;
+  min-width: 250px;
+  padding: 1rem 1.5rem;
+  background: linear-gradient(135deg, #f8f9fa, #edf2f7);
+  border-radius: 12px;
+  border: 1px solid rgba(107, 70, 193, 0.1);
+  transition: all 0.3s ease;
+}
+
+.profileField:hover {
+  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.05);
+  border-left: 3px solid #6b46c1;
+}
+
+/* Label for each profile field */
+.profileLabel {
+  display: block;
+  font-size: 0.875rem;
+  color: var(--text-secondary, #64748b);
+  margin-bottom: 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-weight: 600;
+}
+
+/* Main value for each profile field */
+.profileValue {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--text-primary, #1e293b);
+}
+
+/* Section with CTA buttons */
+.ctaSection {
+  background: white;
+  border-radius: 16px;
+  padding: 3rem 2rem;
+  margin-top: 2.5rem;
+  text-align: center;
+  background-image: linear-gradient(135deg, rgba(107, 70, 193, 0.05), rgba(159, 122, 234, 0.05));
+  border: 1px solid rgba(107, 70, 193, 0.1);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+}
+
+/* CTA title text */
+.ctaTitle {
+  font-size: 1.75rem;
+  font-weight: 700;
+  margin-bottom: 1.25rem;
+  background: linear-gradient(45deg, #6b46c1, #9f7aea);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+
+/* CTA description text */
+.ctaText {
+  font-size: 1.1rem;
+  line-height: 1.6;
+  color: var(--text-primary, #1e293b);
+  margin-bottom: 2rem;
+  max-width: 700px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Button container layout */
+.buttonGroup {
+  display: flex;
+  justify-content: center;
+  gap: 1.25rem;
+  flex-wrap: wrap;
+}
+
+/* Primary action button */
+.primaryButton {
+  min-width: 200px;
+  background: linear-gradient(to right, #6b46c1, #9f7aea);
+  color: white;
+  border: none;
+  padding: 0.9rem 1.75rem;
+  border-radius: 12px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  box-shadow: 0 8px 15px rgba(107, 70, 193, 0.2);
+  cursor: pointer;
+}
+
+.primaryButton:hover {
+  opacity: 0.95;
+  transform: translateY(-3px);
+  box-shadow: 0 12px 20px rgba(107, 70, 193, 0.3);
+}
+
+/* Secondary action button */
+.secondaryButton {
+  min-width: 200px;
+  background: white;
+  color: #6b46c1;
+  border: 2px solid #6b46c1;
+  padding: 0.85rem 1.75rem;
+  border-radius: 12px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.secondaryButton:hover {
+  background: rgba(107, 70, 193, 0.05);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.05);
+}
+
+/* Spinner for loading state */
+.loading-spinner {
+  width: 50px;
+  height: 50px;
+  border: 5px solid rgba(107, 70, 193, 0.1);
+  border-radius: 50%;
+  border-top-color: #6b46c1;
+  margin: 2rem auto;
+  animation: spin 1s infinite linear;
+}
+
+/* Loading animation */
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Text next to spinner */
+.loading-text {
+  text-align: center;
+  color: var(--text-secondary, #64748b);
+  font-size: 1.125rem;
+}
+
+/* Animate elements in */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate {
+  animation: fadeInUp 0.6s ease forwards;
+  opacity: 0;
+}
+
+.delay1 { animation-delay: 0.1s; }
+.delay2 { animation-delay: 0.2s; }
+.delay3 { animation-delay: 0.3s; }
+
+/* Responsive layout */
+@media (max-width: 1280px) {
+  .dashboardContainer {
+    padding: 1.25rem;
+    max-width: 95%;
   }
-  
+
   .welcomeHeader {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background: linear-gradient(135deg, #f8f9fa, #edf2f7);
-    border-radius: 1.5rem;
-    padding: 2.5rem;
-    margin-bottom: 2.5rem;
-    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
-    position: relative;
-    overflow: hidden;
-    border: 1px solid rgba(107, 70, 193, 0.1);
-    transition: all 0.4s ease;
-  }
-  
-  .welcomeHeader::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 4px;
-    background: linear-gradient(90deg, #6b46c1, #9f7aea, #6b46c1);
-    background-size: 200% 100%;
-    animation: gradientFlow 5s linear infinite;
-  }
-  
-  @keyframes gradientFlow {
-    0% {
-      background-position: 0% 50%;
-    }
-    50% {
-      background-position: 100% 50%;
-    }
-    100% {
-      background-position: 0% 50%;
-    }
-  }
-  
-  .welcomeHeader:hover {
-    box-shadow: 0 20px 30px -10px rgba(0, 0, 0, 0.1);
-    transform: translateY(-4px);
-  }
-  
-  .welcomeTitle {
-    font-size: 2.5rem;
-    font-weight: 800;
-    background: linear-gradient(45deg, #6b46c1, #9f7aea);
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
-    color: transparent;
-    margin-bottom: 0.75rem;
-    position: relative;
-  }
-  
-  .welcomeTitle::after {
-    content: '';
-    position: absolute;
-    bottom: -8px;
-    left: 0;
-    width: 80px;
-    height: 3px;
-    background: linear-gradient(90deg, #6b46c1, transparent);
-    border-radius: 5px;
-  }
-  
-  .welcomeSubtitle {
-    color: var(--text-secondary, #64748b);
-    font-size: 1.125rem;
-    max-width: 600px;
-    line-height: 1.6;
-  }
-  
-  .ctaButton {
-    position: relative;
-    padding: 0.9rem 2rem;
-    background: linear-gradient(135deg, #6b46c1, #9f7aea);
-    color: white;
-    border: none;
-    border-radius: 12px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.75px;
-    box-shadow: 0 4px 15px rgba(107, 70, 193, 0.3);
-    overflow: hidden;
-    transition: all 0.4s ease;
-    z-index: 1;
-    cursor: pointer;
-  }
-  
-  .ctaButton::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(
-      120deg,
-      transparent,
-      rgba(255, 255, 255, 0.3),
-      transparent
-    );
-    transition: all 0.6s ease;
-    z-index: -1;
-  }
-  
-  .ctaButton:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 8px 20px rgba(107, 70, 193, 0.4);
-  }
-  
-  .ctaButton:hover::before {
-    left: 100%;
-  }
-  
-  .ctaButton:active {
-    transform: translateY(1px);
-    box-shadow: 0 3px 10px rgba(107, 70, 193, 0.3);
-  }
-  
-  .sectionHeading {
-    font-size: 1.75rem;
-    font-weight: 700;
-    margin-bottom: 1.5rem;
-    background: linear-gradient(45deg, #6b46c1, #9f7aea);
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
-    color: transparent;
-    display: inline-block;
-    position: relative;
-  }
-  
-  .sectionHeading::after {
-    content: '';
-    position: absolute;
-    bottom: -8px;
-    left: 0;
-    width: 40%;
-    height: 3px;
-    background: linear-gradient(90deg, #6b46c1, transparent);
-    border-radius: 5px;
-  }
-  
-  .infoCard {
-    background: white;
-    border-radius: 16px;
     padding: 2rem;
-    margin-bottom: 2.5rem;
-    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
-    border: 1px solid var(--border-color, #e2e8f0);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
   }
-  
-  .infoCard:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+}
+
+@media (max-width: 768px) {
+  .dashboardContainer {
+    padding: 1rem;
+    max-width: 100%;
   }
-  
-  /* Profile specific styles */
-  .profileDetails {
-    display: flex;
+
+  .welcomeHeader {
     flex-direction: column;
+    text-align: center;
+    padding: 2rem 1.5rem;
     gap: 1.5rem;
   }
-  
+
+  .welcomeTitle::after,
+  .sectionHeading::after {
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  .welcomeSubtitle {
+    margin: 0 auto;
+  }
+
+  .sectionHeading {
+    display: block;
+    text-align: center;
+  }
+
   .profileRow {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 2rem;
+    flex-direction: column;
+    gap: 1rem;
   }
-  
+
   .profileField {
-    flex: 1;
-    min-width: 250px;
-    padding: 1rem 1.5rem;
-    background: linear-gradient(135deg, #f8f9fa, #edf2f7);
-    border-radius: 12px;
-    position: relative;
-    transition: all 0.3s ease;
-    border: 1px solid rgba(107, 70, 193, 0.1);
+    min-width: auto;
   }
-  
-  .profileField:hover {
-    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.05);
-    border-left: 3px solid #6b46c1;
-  }
-  
-  .profileLabel {
-    display: block;
-    font-size: 0.875rem;
-    color: var(--text-secondary, #64748b);
-    margin-bottom: 0.5rem;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    font-weight: 600;
-  }
-  
-  .profileValue {
-    display: block;
-    font-size: 1.25rem;
-    font-weight: 600;
-    color: var(--text-primary, #1e293b);
-  }
-  
-  .ctaSection {
-    background: white;
-    border-radius: 16px;
-    padding: 3rem 2rem;
-    margin-top: 2.5rem;
-    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
-    text-align: center;
-    background-image: linear-gradient(
-      135deg,
-      rgba(107, 70, 193, 0.05) 0%,
-      rgba(159, 122, 234, 0.05) 100%
-    );
-    border: 1px solid rgba(107, 70, 193, 0.1);
-  }
-  
-  .ctaTitle {
-    font-size: 1.75rem;
-    font-weight: 700;
-    margin-bottom: 1.25rem;
-    background: linear-gradient(45deg, #6b46c1, #9f7aea);
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
-    color: transparent;
-  }
-  
-  .ctaText {
-    font-size: 1.1rem;
-    line-height: 1.6;
-    color: var(--text-primary, #1e293b);
-    margin-bottom: 2rem;
-    max-width: 700px;
-    margin-left: auto;
-    margin-right: auto;
-  }
-  
+
   .buttonGroup {
-    display: flex;
-    justify-content: center;
-    gap: 1.25rem;
-    flex-wrap: wrap;
+    flex-direction: column;
+    gap: 1rem;
+    align-items: center;
   }
-  
-  .primaryButton {
-    width: auto;
-    min-width: 200px;
-    background: linear-gradient(to right, #6b46c1, #9f7aea);
-    color: white;
-    border: none;
-    padding: 0.9rem 1.75rem;
-    border-radius: 12px;
-    font-weight: 600;
-    transition: all 0.3s ease;
-    box-shadow: 0 8px 15px rgba(107, 70, 193, 0.2);
-    cursor: pointer;
-  }
-  
-  .primaryButton:hover {
-    opacity: 0.95;
-    transform: translateY(-3px);
-    box-shadow: 0 12px 20px rgba(107, 70, 193, 0.3);
-  }
-  
+
+  .primaryButton,
   .secondaryButton {
-    width: auto;
-    min-width: 200px;
-    background: white;
-    color: #6b46c1;
-    border: 2px solid #6b46c1;
-    padding: 0.85rem 1.75rem;
-    border-radius: 12px;
-    font-weight: 600;
-    transition: all 0.3s ease;
-    cursor: pointer;
+    width: 100%;
+    max-width: 280px;
   }
-  
-  .secondaryButton:hover {
-    background: rgba(107, 70, 193, 0.05);
-    transform: translateY(-3px);
-    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.05);
-  }
-  
-  /* Loading state */
-  .loading-spinner {
-    width: 50px;
-    height: 50px;
-    border: 5px solid rgba(107, 70, 193, 0.1);
-    border-radius: 50%;
-    border-top-color: #6b46c1;
-    margin: 2rem auto;
-    animation: spin 1s infinite linear;
-  }
-  
-  @keyframes spin {
-    0% {
-      transform: rotate(0deg);
-    }
-    100% {
-      transform: rotate(360deg);
-    }
-  }
-  
-  .loading-text {
-    text-align: center;
-    color: var(--text-secondary, #64748b);
-    font-size: 1.125rem;
-  }
-  
-  /* Animation Styles */
-  @keyframes fadeInUp {
-    from {
-      opacity: 0;
-      transform: translateY(30px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-  
-  .animate {
-    animation: fadeInUp 0.6s ease forwards;
-    opacity: 0;
-  }
-  
-  .delay1 {
-    animation-delay: 0.1s;
-  }
-  
-  .delay2 {
-    animation-delay: 0.2s;
-  }
-  
-  .delay3 {
-    animation-delay: 0.3s;
-  }
-  
-  /* Responsive Styles */
-  @media (max-width: 1280px) {
-    .dashboardContainer {
-      padding: 1.25rem;
-      max-width: 95%;
-    }
-  
-    .welcomeHeader {
-      padding: 2rem;
-    }
-  }
-  
-  @media (max-width: 768px) {
-    .dashboardContainer {
-      padding: 1rem;
-      max-width: 100%;
-    }
-  
-    .welcomeHeader {
-      flex-direction: column;
-      text-align: center;
-      padding: 2rem 1.5rem;
-      gap: 1.5rem;
-    }
-  
-    .welcomeTitle::after {
-      left: 50%;
-      transform: translateX(-50%);
-    }
-  
-    .welcomeSubtitle {
-      margin: 0 auto;
-    }
-  
-    .sectionHeading {
-      display: block;
-      text-align: center;
-    }
-  
-    .sectionHeading::after {
-      left: 50%;
-      transform: translateX(-50%);
-    }
-  
-    .profileRow {
-      flex-direction: column;
-      gap: 1rem;
-    }
-  
-    .profileField {
-      min-width: auto;
-    }
-  
-    .buttonGroup {
-      flex-direction: column;
-      gap: 1rem;
-      align-items: center;
-    }
-  
-    .primaryButton,
-    .secondaryButton {
-      width: 100%;
-      max-width: 280px;
-    }
-  }
+}

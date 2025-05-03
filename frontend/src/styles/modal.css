@@ -1,38 +1,42 @@
+/* Fullscreen dark overlay to dim the background */
 .modalOverlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 1000;
-  }
-  
-  .modalContainer {
-    background: white;
-    padding: 2rem;
-    border-radius: 16px;
-    width: 90%;
-    max-width: 500px;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
-    position: relative;
-    animation: modalFadeIn 0.3s ease forwards;
-  }
-  
-  .modalCloseButton {
-    position: absolute;
-    top: 0.75rem;
-    right: 1rem;
-    font-size: 1.5rem;
-    background: none;
-    border: none;
-    cursor: pointer;
-  }
-  
-  @keyframes modalFadeIn {
-    from { opacity: 0; transform: scale(0.95); }
-    to { opacity: 1; transform: scale(1); }
-  }
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;              /* Covers full screen width */
+  height: 100%;             /* Covers full screen height */
+  background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black background */
+  display: flex;            /* Enables centering */
+  align-items: center;      /* Vertically center modal */
+  justify-content: center;  /* Horizontally center modal */
+  z-index: 1000;            /* Ensures modal stays above other elements */
+}
+
+/* Modal box itself */
+.modalContainer {
+  background: white;
+  padding: 2rem;                /* Internal spacing */
+  border-radius: 16px;          /* Rounded corners */
+  width: 90%;                   /* Responsive width */
+  max-width: 500px;             /* Limits modal size on large screens */
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15); /* Drop shadow for depth */
+  position: relative;
+  animation: modalFadeIn 0.3s ease forwards;  /* Smooth entrance animation */
+}
+
+/* Button to close modal (X icon typically) */
+.modalCloseButton {
+  position: absolute;
+  top: 0.75rem;
+  right: 1rem;
+  font-size: 1.5rem;
+  background: none;
+  border: none;
+  cursor: pointer;            /* Pointer cursor on hover */
+}
+
+/* Entry animation: fade in and scale up */
+@keyframes modalFadeIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}

@@ -1,5 +1,7 @@
+// Import axios for HTTP requests and AxiosError for error typing
 import axios, { AxiosError } from 'axios'
-// Import types used in the API responses
+
+// Import relevant TypeScript types for interview data
 import {
   InterviewQuestion,
   InterviewFeedback,
@@ -8,18 +10,19 @@ import {
   QuestionRating,
 } from '../types/interview'
 
+// Service class to handle all interview-related API interactions
 class InterviewService {
-  // Setup axios instance for API calls with default settings
+  // Create an Axios instance with default configuration
   private apiClient = axios.create({
-    baseURL: '/api', // All requests will start with this base URL
+    baseURL: '/api', // Base URL for API endpoints
     headers: {
       'Content-Type': 'application/json',
     },
-    withCredentials: true, // Allow sending cookies with requests
+    withCredentials: true, // Include cookies (if needed)
   })
 
   constructor() {
-    // Add an interceptor to attach the auth token to every request
+    // Intercept each request to add the JWT token to headers if available
     this.apiClient.interceptors.request.use(
       (config) => {
         const token = localStorage.getItem('token')
@@ -32,7 +35,7 @@ class InterviewService {
     )
   }
 
-  // Handles API errors and logs useful info
+  // Handles and standardizes error logging and formatting
   private handleError(error: unknown) {
     if (axios.isAxiosError(error)) {
       const axiosError = error as AxiosError<{
@@ -52,7 +55,7 @@ class InterviewService {
     throw new Error('An unexpected error occurred')
   }
 
-  // Starts a new interview session
+  // Start a new interview session
   async startInterview(): Promise<InterviewSession> {
     try {
       console.log('Starting interview...')
@@ -65,15 +68,11 @@ class InterviewService {
       return response.data
     } catch (error) {
       console.error('Error starting interview:', error)
-      if (axios.isAxiosError(error)) {
-        console.error('Response:', error.response)
-        console.error('Request:', error.request)
-      }
       throw this.handleError(error)
     }
   }
 
-  // Gets the next question from the server
+  // Get the next interview question
   async getNextQuestion(): Promise<InterviewQuestion> {
     try {
       const response = await this.apiClient.get<InterviewQuestion>(
@@ -86,7 +85,7 @@ class InterviewService {
     }
   }
 
-  // Sends user's response to a question
+  // Submit a response to a question in the current session
   async submitResponse(
     sessionId: number,
     questionId: number,
@@ -104,7 +103,7 @@ class InterviewService {
     }
   }
 
-  // Completes the current interview session
+  // Complete the current interview session
   async completeInterview(sessionId: number): Promise<void> {
     try {
       await this.apiClient.post(`/interviews/${sessionId}/complete/`)
@@ -114,7 +113,7 @@ class InterviewService {
     }
   }
 
-  // Fetches list of past interviews with pagination support
+  // Fetch paginated list of past interviews
   async getPastInterviews(
     page = 1,
     limit = 10
@@ -135,7 +134,7 @@ class InterviewService {
     }
   }
 
-  // Lets the user rate a question as helpful or not
+  // Rate a specific question from an interview
   async rateQuestion(
     questionId: number,
     interviewId: number,
@@ -157,7 +156,7 @@ class InterviewService {
     }
   }
 
-  // Submits final feedback at the end of the interview
+  // Submit general feedback for an interview session
   async submitFeedback(
     interviewId: number,
     content: string,
@@ -178,7 +177,7 @@ class InterviewService {
     }
   }
 
-  // Gets the user's past rating for a specific question if available
+  // Retrieve a rating for a specific question in an interview
   async getQuestionRating(
     questionId: number,
     interviewId: number
@@ -196,10 +195,10 @@ class InterviewService {
       return response.data
     } catch (error) {
       console.error('Error fetching question rating:', error)
-      return null
+      return null // Gracefully handle error by returning null
     }
   }
 }
 
-// Export a single instance of the service
+// Export a singleton instance of the InterviewService
 export const interviewService = new InterviewService()

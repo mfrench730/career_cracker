@@ -1,32 +1,36 @@
+/* Main fixed header bar */
 .header {
   position: fixed;
   top: 0;
   right: 0;
-  left: 75px;
+  left: 75px; /* Matches sidebar width when collapsed */
   height: 70px;
   background: #ffffff;
   padding: 0 30px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Subtle shadow */
   transition: left 0.5s ease;
   z-index: 98;
-  width: calc(100% - 75px);
+  width: calc(100% - 75px); /* Width accounts for sidebar */
 }
 
+/* Header when sidebar is expanded */
 .header.open {
   left: 250px;
   width: calc(100% - 250px);
   transition: all 0.5s ease;
 }
 
+/* Left section (typically logo/title) */
 .headerLeft h1 {
   font-size: 24px;
   color: #11101d;
   font-weight: 600;
 }
 
+/* Right section containing search, icons, profile */
 .headerRight {
   position: relative;
   display: flex;
@@ -34,11 +38,13 @@
   gap: 20px;
 }
 
+/* Search input container */
 .searchContainer {
   position: relative;
   width: 300px;
 }
 
+/* Search input styling */
 .searchContainer input {
   width: 100%;
   height: 40px;
@@ -50,12 +56,14 @@
   transition: all 0.3s ease;
 }
 
+/* Search input focus state */
 .searchContainer input:focus {
   border-color: #11101d;
   background: #ffffff;
   outline: none;
 }
 
+/* Search icon inside input */
 .searchContainer i {
   position: absolute;
   right: 15px;
@@ -65,11 +73,13 @@
   font-size: 18px;
 }
 
+/* Generic icon container (bell, notifications, etc.) */
 .iconContainer {
   position: relative;
   cursor: pointer;
 }
 
+/* Icon inside container */
 .iconContainer i {
   font-size: 22px;
   color: #11101d;
@@ -78,10 +88,12 @@
   transition: all 0.3s ease;
 }
 
+/* Icon hover effect */
 .iconContainer:hover i {
   background: rgba(17, 16, 29, 0.1);
 }
 
+/* Notification badge for icons */
 .badge {
   position: absolute;
   top: -5px;
@@ -98,6 +110,7 @@
   justify-content: center;
 }
 
+/* Profile avatar and info */
 .profile {
   position: relative;
   z-index: 1001;
@@ -110,10 +123,12 @@
   transition: all 0.3s ease;
 }
 
+/* Hover effect on profile */
 .profile:hover {
   background: rgba(17, 16, 29, 0.1);
 }
 
+/* Avatar image */
 .profile img {
   width: 40px;
   height: 40px;
@@ -121,22 +136,26 @@
   object-fit: cover;
 }
 
+/* Container for name and role */
 .profileInfo {
   display: flex;
   flex-direction: column;
 }
 
+/* User name */
 .name {
   font-size: 14px;
   font-weight: 600;
   color: #11101d;
 }
 
+/* User role/subtitle */
 .role {
   font-size: 12px;
   color: #666;
 }
 
+/* Responsive adjustments */
 @media (max-width: 1024px) {
   .searchContainer {
     width: 250px;
@@ -153,13 +172,13 @@
   }
 
   .profileInfo {
-    display: none;
+    display: none; /* Hide name/role on smaller screens */
   }
 }
 
 @media (max-width: 576px) {
   .searchContainer {
-    display: none;
+    display: none; /* Hide search on very small screens */
   }
 
   .headerRight {
@@ -167,6 +186,7 @@
   }
 }
 
+/* Dropdown for user profile actions (logout, settings, etc.) */
 .profileDropdown {
   position: absolute;
   top: calc(100% + 10px);
@@ -179,6 +199,7 @@
   overflow: hidden;
 }
 
+/* Items inside the dropdown */
 .dropdownItem {
   display: flex;
   align-items: center;
@@ -188,6 +209,7 @@
   transition: background-color 0.3s ease;
 }
 
+/* Hover effect for dropdown items */
 .dropdownItem:hover {
   background: rgba(17, 16, 29, 0.1);
 }
