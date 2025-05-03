@@ -9,6 +9,7 @@ import { useAuth } from '../../context/AuthContext'
 import '../../styles/signUpIn.css';
 
 const SignIn: React.FC = () => {
+  // State hooks for form inputs
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [rememberMe, setRememberMe] = useState(false)
@@ -17,6 +18,7 @@ const SignIn: React.FC = () => {
   const navigate = useNavigate()
   const { login } = useAuth()
 
+  // Handle form submission
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
@@ -56,14 +58,17 @@ const SignIn: React.FC = () => {
         <h1 className="title">Sign In</h1>
         {error && <p className="error-message">{error}</p>}
         <form onSubmit={handleSubmit} className="form">
+          {/* Username Input */}
           <div className="form-group">
             <label htmlFor="username" className="label">Username</label>
             <input type="text" id="username" value={username} onChange={(e) => setUsername(e.target.value)} required />
           </div>
+          {/* Password Input */}
           <div className="form-group">
             <label htmlFor="password" className="label">Password</label>
             <input type="password" id="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
           </div>
+          {/* Remember me + forgot password */}
           <div className="form-group row">
             <div className="checkbox-group">
               <Checkbox id="remember-me" checked={rememberMe} onCheckedChange={(checked) => setRememberMe(checked as boolean)} />
@@ -71,10 +76,12 @@ const SignIn: React.FC = () => {
             </div>
             <Link to="/forgot-password" className="link">Forgot Password?</Link>
           </div>
+          {/* Submit Button */}
           <Button type="submit" className="submit-button" disabled={loading}>
             {loading ? 'Signing In...' : 'Sign In'}
           </Button>
         </form>
+        {/* Navigation to Sign Up */}
         <p className="footer-text">
           Don't have an account? <Link to="/signup" className="link">Sign Up</Link>
         </p>
