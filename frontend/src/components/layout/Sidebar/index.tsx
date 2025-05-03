@@ -1,15 +1,17 @@
 import { Link, useLocation } from 'react-router-dom'
 import { useAuth } from '../../../context/AuthContext'
 import styles from '@/styles/sidebar.module.css'
-import { CircleUserRound } from "lucide-react";
+import { CircleUserRound } from 'lucide-react'
 import { useProfile } from '@/context/ProfileContext'
 import { useEffect } from 'react'
 
+// Sidebar props: controls open state and toggle function
 interface SidebarProps {
   isOpen: boolean
   onToggle: () => void
 }
 
+// Nav items shown in the sidebar
 const NAVIGATION_ITEMS = [
   {
     path: '/dashboard',
@@ -31,13 +33,16 @@ const NAVIGATION_ITEMS = [
 export default function Sidebar({ isOpen, onToggle }: SidebarProps) {
   const location = useLocation()
   const { logout } = useAuth()
-   const { profile, fetchProfile } = useProfile()
-    useEffect(() => {
-      fetchProfile()
-    }, [fetchProfile])
+  const { profile, fetchProfile } = useProfile()
+
+  // Load user profile when sidebar mounts
+  useEffect(() => {
+    fetchProfile()
+  }, [fetchProfile])
 
   return (
     <div className={`${styles.sidebar} ${isOpen ? styles.open : ''}`}>
+      {/* Logo and hamburger toggle */}
       <div className={styles['logo-details']}>
         {isOpen && (
           <>
@@ -45,10 +50,12 @@ export default function Sidebar({ isOpen, onToggle }: SidebarProps) {
             <div className={styles.logo_name}>CareerCracker</div>
           </>
         )}
+        {/* Menu toggle icon */}
         <i className="bx bx-menu" id="btn" onClick={onToggle}></i>
       </div>
 
       <ul className={styles['nav-list']}>
+        {/* Search input */}
         <li>
           <Link to="#">
             <i className={`bx bx-search ${styles['search-icon']}`}></i>
@@ -57,6 +64,7 @@ export default function Sidebar({ isOpen, onToggle }: SidebarProps) {
           <span className={styles.tooltip}>Search</span>
         </li>
 
+        {/* Loop through each nav item */}
         {NAVIGATION_ITEMS.map((item) => (
           <li key={item.path}>
             <Link
@@ -70,6 +78,7 @@ export default function Sidebar({ isOpen, onToggle }: SidebarProps) {
           </li>
         ))}
 
+        {/* Profile section at the bottom of the sidebar */}
         <li className={styles.profile}>
           {isOpen ? (
             <>
@@ -80,9 +89,11 @@ export default function Sidebar({ isOpen, onToggle }: SidebarProps) {
                   <div className={styles.job}>{profile?.target_job_title}</div>
                 </div>
               </div>
+              {/* Logout icon (shown expanded) */}
               <i className="bx bx-log-out" id="log_out" onClick={logout}></i>
             </>
           ) : (
+            // Logout icon (collapsed view)
             <i className="bx bx-log-out" id="log_out" onClick={logout}></i>
           )}
         </li>
