@@ -1,3 +1,5 @@
+// Fullscreen modal used during an active mock interview session
+// Handles displaying the question, collecting voice/text responses, and providing feedback
 import React, { useState, useEffect, useCallback, useRef } from 'react'
 import {
   X,
@@ -15,17 +17,20 @@ import { Alert, AlertDescription } from '@/components/ui/alert'
 import styles from '@/styles/activeInterviewModal.module.css'
 import { useInterview } from '@/context/InterviewContext'
 
+// Props passed into the modal component
 interface InterviewModalProps {
   isOpen: boolean
   onClose: () => void
   onInterviewComplete: (interviewId: number) => void
 }
 
+// Core interview modal component
 const ActiveInterviewModal: React.FC<InterviewModalProps> = ({
   isOpen,
   onClose,
   onInterviewComplete,
 }) => {
+  // Interview state from context
   const {
     currentSession,
     currentQuestion,
@@ -37,6 +42,7 @@ const ActiveInterviewModal: React.FC<InterviewModalProps> = ({
     getQuestionRating,
   } = useInterview()
 
+  // Local UI and logic state
   const [response, setResponse] = useState('')
   const [feedback, setFeedback] = useState<string | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -53,6 +59,7 @@ const ActiveInterviewModal: React.FC<InterviewModalProps> = ({
   const hasRecognitionSupport =
     'SpeechRecognition' in window || 'webkitSpeechRecognition' in window
 
+  // On question/session load, check for an existing question rating
   useEffect(() => {
     if (currentQuestion && currentSession) {
       const checkForExistingRating = async () => {
@@ -62,21 +69,17 @@ const ActiveInterviewModal: React.FC<InterviewModalProps> = ({
               currentQuestion.id,
               currentSession.id
             )
-            if (ratingData && ratingData.rating) {
-              setQuestionRating(ratingData.rating)
-            } else {
-              setQuestionRating(null)
-            }
+            setQuestionRating(ratingData?.rating || null)
           }
         } catch (error) {
           console.error('Error fetching question rating:', error)
         }
       }
-
       checkForExistingRating()
     }
   }, [currentQuestion, currentSession, getQuestionRating])
 
+  // Keep track of question number and reset when modal is opened
   useEffect(() => {
     if (isOpen) {
       setCurrentQuestionNumber((prev) => Math.min(prev, 5))
@@ -89,6 +92,7 @@ const ActiveInterviewModal: React.FC<InterviewModalProps> = ({
     }
   }, [isOpen, currentSession])
 
+  // Typewriter effect for showing AI feedback slowly
   useEffect(() => {
     if (feedback) {
       setDisplayedFeedback('')
@@ -122,6 +126,7 @@ const ActiveInterviewModal: React.FC<InterviewModalProps> = ({
     }
   }, [feedback])
 
+  // Submits the current answer and shows AI feedback
   const validateAndSubmit = useCallback(async () => {
     if (!response.trim()) {
       setShowError(true)
@@ -130,15 +135,13 @@ const ActiveInterviewModal: React.FC<InterviewModalProps> = ({
 
     setShowError(false)
     setIsSubmitting(true)
+
     try {
-      if (!currentQuestion) {
-        throw new Error('No current question found')
-      }
+      if (!currentQuestion) throw new Error('No current question found')
 
       const feedbackResponse = await submitResponse(response)
       setFeedback(feedbackResponse.ai_feedback)
       setIsResponseSubmitted(true)
-
       setIsLastQuestion(currentQuestionNumber >= 5)
     } catch (error) {
       console.error('Error submitting response:', error)
@@ -147,6 +150,7 @@ const ActiveInterviewModal: React.FC<InterviewModalProps> = ({
     }
   }, [response, submitResponse, currentQuestion, currentQuestionNumber])
 
+  // Skips current question without answering
   const handleSkipQuestion = useCallback(async () => {
     setResponse('')
     setFeedback(null)
@@ -155,6 +159,7 @@ const ActiveInterviewModal: React.FC<InterviewModalProps> = ({
     await skipQuestion()
   }, [skipQuestion])
 
+  // Moves to next question manually
   const handleNextQuestion = useCallback(async () => {
     setResponse('')
     setFeedback(null)
@@ -164,6 +169,7 @@ const ActiveInterviewModal: React.FC<InterviewModalProps> = ({
     await skipQuestion()
   }, [skipQuestion])
 
+  // Handles toggling mic input on/off
   const handleMicToggle = useCallback(() => {
     if (!recognitionRef.current) return
 
@@ -176,6 +182,7 @@ const ActiveInterviewModal: React.FC<InterviewModalProps> = ({
     }
   }, [isListening])
 
+  // Finalizes the interview session
   const handleComplete = useCallback(() => {
     if (isListening && recognitionRef.current) {
       recognitionRef.current.stop()
@@ -196,6 +203,7 @@ const ActiveInterviewModal: React.FC<InterviewModalProps> = ({
     currentSession,
   ])
 
+  // Submits question rating (LIKE or DISLIKE)
   const handleRateQuestion = useCallback(
     async (rating: string) => {
       if (!currentQuestion || !currentSession) return
@@ -215,6 +223,7 @@ const ActiveInterviewModal: React.FC<InterviewModalProps> = ({
     [currentQuestion, currentSession, rateQuestion, questionRating]
   )
 
+  // Sets up speech recognition if supported
   useEffect(() => {
     if (hasRecognitionSupport) {
       const SpeechRecognition =
@@ -226,9 +235,9 @@ const ActiveInterviewModal: React.FC<InterviewModalProps> = ({
         recognitionRef.current.interimResults = true
         recognitionRef.current.lang = 'en-US'
 
+        // Updates response text live while speaking
         recognitionRef.current.onresult = (event: SpeechRecognitionEvent) => {
           if (!event.results) return
-
           const results = Array.from(event.results)
           if (results.length === 0) return
 
@@ -239,16 +248,13 @@ const ActiveInterviewModal: React.FC<InterviewModalProps> = ({
           if (!alternative?.transcript) return
 
           let finalText = ''
-
           for (let i = 0; i < results.length - 1; i++) {
             const result = results[i]
             if (result?.isFinal && result[0]?.transcript) {
               finalText += result[0].transcript + ' '
             }
           }
-
           finalText += alternative.transcript
-
           setResponse(finalText.trim())
         }
 
@@ -262,7 +268,6 @@ const ActiveInterviewModal: React.FC<InterviewModalProps> = ({
         }
       }
     }
-
     return () => {
       if (recognitionRef.current) {
         recognitionRef.current.stop()
@@ -270,6 +275,7 @@ const ActiveInterviewModal: React.FC<InterviewModalProps> = ({
     }
   }, [hasRecognitionSupport])
 
+  // Reset modal state on open
   useEffect(() => {
     if (isOpen) {
       setResponse('')
@@ -288,6 +294,7 @@ const ActiveInterviewModal: React.FC<InterviewModalProps> = ({
     }
   }, [isOpen, currentSession])
 
+  // If browser doesn’t support speech recognition, show fallback
   if (!hasRecognitionSupport) {
     return (
       <div className={styles.modalOverlay}>
@@ -311,12 +318,15 @@ const ActiveInterviewModal: React.FC<InterviewModalProps> = ({
     )
   }
 
+  // Don’t render if not open or question is missing
   if (!isOpen || !currentQuestion) return null
 
+  // UI rendered to screen
   return (
     <>
       <div className={styles.modalOverlay} onClick={onClose} />
       <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
+        {/* Header section with close button */}
         <div className={styles.modalHeader}>
           <h2 className={styles.modalTitle}>Interview Question</h2>
           <div className={styles.questionCount}>
@@ -327,13 +337,16 @@ const ActiveInterviewModal: React.FC<InterviewModalProps> = ({
           </button>
         </div>
 
+        {/* Question + response input */}
         <div className={styles.modalBody}>
           <div className={styles.interviewGrid}>
+            {/* Display the question */}
             <div className={styles.questionSection}>
               <h3 className={styles.sectionTitle}>Question:</h3>
               <p className={styles.questionText}>{currentQuestion.question}</p>
             </div>
 
+            {/* User response area with mic toggle */}
             <div className={styles.responseSection}>
               <div className={styles.responseHeader}>
                 <h3 className={styles.sectionTitle}>Your Response:</h3>
@@ -354,6 +367,7 @@ const ActiveInterviewModal: React.FC<InterviewModalProps> = ({
                 </Button>
               </div>
 
+              {/* Textarea for typing response */}
               <div className={styles.textareaContainer}>
                 <Textarea
                   value={response}
@@ -378,6 +392,7 @@ const ActiveInterviewModal: React.FC<InterviewModalProps> = ({
                 )}
               </div>
 
+              {/* Feedback section shown after submitting */}
               {feedback && (
                 <div className={styles.feedbackSection}>
                   <Alert>
@@ -455,6 +470,7 @@ const ActiveInterviewModal: React.FC<InterviewModalProps> = ({
           </div>
         </div>
 
+        {/* Footer with submit/next/complete actions */}
         <div className={styles.modalFooter}>
           {!isLastQuestion && (
             <Button
