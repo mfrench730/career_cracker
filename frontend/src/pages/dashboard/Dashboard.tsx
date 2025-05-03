@@ -2,14 +2,20 @@ import { useState, useEffect } from 'react'
 import { useProfile } from '@/context/ProfileContext'
 import styles from '@/styles/dashboard.module.css'
 
+// Main Dashboard component
 const Dashboard = () => {
+  // Grab profile info and loading state from context
   const { profile, fetchProfile, isLoading } = useProfile()
+
+  // For handling hover animation on feature cards
   const [animateFeature, setAnimateFeature] = useState<string | null>(null)
 
+  // Load profile when component mounts
   useEffect(() => {
     fetchProfile()
   }, [fetchProfile])
 
+  // These are the main features we show on the dashboard
   const features = [
     {
       id: 'interviews',
@@ -41,6 +47,7 @@ const Dashboard = () => {
     },
   ]
 
+  // These are the 4 steps we show to explain the process visually
   const processSteps = [
     { icon: '👤', label: 'Create Profile' },
     { icon: '🎯', label: 'Practice Interviews' },
@@ -48,6 +55,7 @@ const Dashboard = () => {
     { icon: '🚀', label: 'Land Your Dream Job' },
   ]
 
+  // If the profile is still loading, just show a loading message
   if (isLoading) {
     return (
       <div className={styles.dashboardContainer}>
@@ -58,8 +66,10 @@ const Dashboard = () => {
     )
   }
 
+  // Main dashboard UI
   return (
     <div className={styles.dashboardContainer}>
+      {/* Welcome header section with call to action button */}
       <div className={`${styles.welcomeHeader} ${styles.animate}`}>
         <div>
           <h1 className={styles.welcomeTitle}>
@@ -72,6 +82,7 @@ const Dashboard = () => {
             your dream career through personalized practice and feedback
           </p>
         </div>
+        {/* Button to start interview */}
         <button
           className={styles.ctaButton}
           onClick={() => (window.location.href = '/interview')}
@@ -80,6 +91,7 @@ const Dashboard = () => {
         </button>
       </div>
 
+      {/* Section introducing CareerCracker and how it works */}
       <div className={`${styles.infoCard} ${styles.animate} ${styles.delay1}`}>
         <h2 className={styles.sectionHeading}>Meet CareerCracker</h2>
         <p
@@ -96,6 +108,7 @@ const Dashboard = () => {
           receive expert feedback to excel in your career journey.
         </p>
 
+        {/* Visual representation of the step-by-step process */}
         <div className={styles.processContainer}>
           {processSteps.map((step, index) => (
             <div key={index} className={styles.processStep}>
@@ -112,11 +125,14 @@ const Dashboard = () => {
         </div>
       </div>
 
+      {/* Features section */}
       <h2
         className={`${styles.sectionHeading} ${styles.animate} ${styles.delay2}`}
       >
         Key Features
       </h2>
+
+      {/* Display each feature in a grid */}
       <div className={styles.featureGrid}>
         {features.map((feature, index) => (
           <div
@@ -124,6 +140,7 @@ const Dashboard = () => {
             className={`${styles.featureCard} ${styles.animate} ${
               styles[`delay${index + 1}`]
             }`}
+            // Add hover animation effect
             onMouseEnter={() => setAnimateFeature(feature.id)}
             onMouseLeave={() => setAnimateFeature(null)}
           >
@@ -134,6 +151,7 @@ const Dashboard = () => {
         ))}
       </div>
 
+      {/* Final call-to-action section */}
       <div
         className={`${styles.ctaSection} ${styles.animate} ${styles.delay4}`}
       >
@@ -144,12 +162,14 @@ const Dashboard = () => {
           succeed in landing your dream job!
         </p>
         <div className={styles.buttonGroup}>
+          {/* Button to go to interview page */}
           <button
             className={styles.primaryButton}
             onClick={() => (window.location.href = '/interview')}
           >
             Start Interview
           </button>
+          {/* Button to go to jobs page */}
           <button
             className={styles.secondaryButton}
             onClick={() => (window.location.href = '/jobs')}
